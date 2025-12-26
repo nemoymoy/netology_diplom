@@ -3,7 +3,10 @@
 services:
   web:
     # Берем Dockerfile из каталога orders
-    build: ./orders
+    build:
+      context: ./orders
+      dockerfile: Dockerfile
+#    build: ./orders
     # Запускаем сервер gunicorn
     command: gunicorn django_project.wsgi:application --bind 0.0.0.0:8000
 #    volumes:

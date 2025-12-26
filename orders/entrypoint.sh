@@ -12,8 +12,8 @@ then
     echo "PostgreSQL started"
 fi
 # Удаляем все старые данные
-python manage.py flush --no-input
+#python manage.py flush --no-input
 # Выполняем миграции
-python manage.py migrate
+#python manage.py migrate
 
 exec "$@"
