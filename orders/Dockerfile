@@ -69,4 +69,7 @@ RUN chown -R app:app $APP_HOME
 # изменение рабочего пользователя
 USER app
 
+# назначаем полномочия для скрипта
+RUN chmod 774 /home/app/web/entrypoint.sh
+
 ENTRYPOINT ["/home/app/web/entrypoint.sh"]
