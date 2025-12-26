@@ -13,6 +13,10 @@ import os
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key  # Импортирована функция случайного секретного ключа
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,9 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = get_random_secret_key  # Удален секретный ключ по умолчанию и заменен на результат работы функции
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", default=0)) # Значение в файле переменных .env
+DEBUG = bool(os.getenv("DEBUG", default=0)) # Значение в файле переменных .env
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") # Значение в файле переменных .env
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(",") # Значение в файле переменных .env
 
 
 # Application definition
@@ -39,8 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'rest_framework',   # Добавлено приложение
-    'django_filters',   # Добавлено приложение
     'backend'           # Добавлено приложение
 ]
 
@@ -80,12 +82,12 @@ WSGI_APPLICATION = 'orders.wsgi.application'
 # Внесены настройки базы данных postgresql из файла .env
 DATABASES = {
     'default': {
-        "ENGINE": os.environ.get("DJANGO_POSTGRES_ENGINE", 'django.db.backends.postgresql_psycopg2'),
-        "NAME": os.environ.get("DJANGO_POSTGRES_DB", 'diplom_db'),
-        "USER": os.environ.get("DJANGO_POSTGRES_USER", "diplom_user"),
-        "PASSWORD": os.environ.get("DJANGO_POSTGRES_PASSWORD", "diplom_secret"),
-        "HOST": os.environ.get("DJANGO_POSTGRES_HOST", "localhost"),
-        "PORT": os.environ.get("DJANGO_POSTGRES_PORT", "5432"),
+        "ENGINE": os.getenv("DJANGO_POSTGRES_ENGINE", 'django.db.backends.postgresql_psycopg2'),
+        "NAME": os.getenv("DJANGO_POSTGRES_DB", 'diplom_db'),
+        "USER": os.getenv("DJANGO_POSTGRES_USER", "diplom_user"),
+        "PASSWORD": os.getenv("DJANGO_POSTGRES_PASSWORD", "diplom_secret"),
+        "HOST": os.getenv("DJANGO_POSTGRES_HOST", "localhost"),
+        "PORT": os.getenv("DJANGO_POSTGRES_PORT", "5432"),
     }
 }
 
