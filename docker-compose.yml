@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
 #    build: ./orders
     # Запускаем сервер gunicorn
-    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn orders.wsgi:application --bind 0.0.0.0:8000
 #    volumes:
 #      - ./orders/:/usr/src/app/
     # Открываем порт 8000 внутри и снаружи
