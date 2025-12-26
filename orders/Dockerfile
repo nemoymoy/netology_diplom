@@ -2,7 +2,7 @@
 FROM python:3.13-alpine3.23
 
 # рабочая директория внутри проекта
-WORKDIR /usr/src/orders
+WORKDIR /usr/src/app
 
 # переменные окружения для python
 ENV PYTHONDONTWRITEBYTECODE 1
