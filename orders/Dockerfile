@@ -17,14 +17,14 @@ RUN pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# копируем скрипт проверки запуска postresql entrypoint.sh
-COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
+## копируем скрипт проверки запуска postresql entrypoint.sh
+#COPY entrypoint.sh .
 
 # копируем проект
-COPY orders .
+COPY . .
 
-# назначаем полномочия для скрипта
-RUN chmod +x /usr/src/app/entrypoint.sh
-
-# запускаем скрипт entrypoint.sh
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+## назначаем полномочия для скрипта
+#RUN chmod +x /usr/src/app/entrypoint.sh
+#
+## запускаем скрипт entrypoint.sh
+#ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
