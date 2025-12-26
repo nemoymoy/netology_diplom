@@ -17,8 +17,8 @@ RUN pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-## копируем скрипт проверки запуска postresql entrypoint.sh
-#COPY entrypoint.sh .
+# копируем скрипт проверки запуска postresql entrypoint.sh
+COPY entrypoint.sh .
 
 # копируем проект
 COPY . .
