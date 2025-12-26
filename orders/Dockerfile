@@ -23,8 +23,8 @@ RUN pip install -r requirements.txt
 # копируем проект
 COPY . .
 
-## назначаем полномочия для скрипта
-#RUN chmod +x /usr/src/app/entrypoint.sh
-#
-## запускаем скрипт entrypoint.sh
-#ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+# назначаем полномочия для скрипта
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+# запускаем скрипт entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
