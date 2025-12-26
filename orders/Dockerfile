@@ -24,4 +24,4 @@ COPY entrypoint.sh .
 COPY orders .
 
 # запускаем скрипт entrypoint.sh
-ENTRYPOINT ["/usr/src/orders/entrypoint.sh"]
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
