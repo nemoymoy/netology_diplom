@@ -2,25 +2,31 @@
 
 services:
   web:
+    # Берем Dockerfile из каталога orders
     build: ./orders
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./orders/:/usr/src/app/
+    # Запускаем сервер gunicorn
+    command: gunicorn django_project.wsgi:application --bind 0.0.0.0:8000
+#    volumes:
+#      - ./orders/:/usr/src/app/
+    # Открываем порт 8000 внутри и снаружи
     ports:
       - 8000:8000
     env_file:
       - ./.env
+    # Дожидаемся запуска контейнера db
+    depends_on:
+      - db
 
   db:
+    # Образ и версия базы, которую мы будем использовать
     image: postgres:14.3-alpine3.15
     ports:
       - "5431:5432"
+    # Внешний том(volume) и место где он будет подключен внутри контейнера
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_USER=diplom_user
-      - POSTGRES_PASSWORD=diplom_secret
-      - POSTGRES_DB=diplom_db
+    env_file:
+      - ./.env
 
 volumes:
   postgres_data:
