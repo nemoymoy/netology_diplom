@@ -20,7 +20,7 @@ RUN pip install --upgrade pip
 # проверка кода через линтер
 RUN pip install flake8
 COPY . .
-RUN flake8 --ignore=E501,F401 /usr/src/app/backend
+RUN flake8 --ignore=E501,F401 /usr/src/app/orders
 
 COPY requirements.txt .
 #RUN pip install -r requirements.txt
@@ -49,6 +49,8 @@ RUN addgroup -S app && adduser -S app -G app
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
+RUN mkdir $APP_HOME/static
+RUN mkdir $APP_HOME/media
 WORKDIR $APP_HOME
 
 # установка зависимостей и копирование из builder

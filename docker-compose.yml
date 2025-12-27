@@ -17,6 +17,10 @@ services:
     # Открываем порт 8000 внутри и снаружи
 #    ports:
 #      - 8000:8000
+    # Подключаем статические и медиа файлы
+    volumes:
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
     env_file:
       - ./.env
     # Дожидаемся запуска контейнера db
@@ -36,6 +40,10 @@ services:
 
   nginx:
     build: ./nginx
+    # Подключаем статические и медиа файлы
+    volumes:
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
     ports:
       - 1337:80
     depends_on:
@@ -43,3 +51,5 @@ services:
 
 volumes:
   postgres_data:
+  static_volume:
+  media_volume:
