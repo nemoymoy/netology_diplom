@@ -11,9 +11,12 @@ services:
     command: gunicorn orders.wsgi:application --bind 0.0.0.0:8000
 #    volumes:
 #      - ./orders/:/usr/src/app/
+    # Открываем порт 8000 наружу
+    expose:
+      - 8000
     # Открываем порт 8000 внутри и снаружи
-    ports:
-      - 8000:8000
+#    ports:
+#      - 8000:8000
     env_file:
       - ./.env
     # Дожидаемся запуска контейнера db
@@ -30,6 +33,13 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env.db
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - web
 
 volumes:
   postgres_data:
