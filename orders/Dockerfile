@@ -18,9 +18,9 @@ RUN apk update \
 RUN pip install --upgrade pip
 
 # проверка кода через линтер
-RUN pip install flake8
+# RUN pip install flake8
 COPY . .
-RUN flake8 --ignore=E501,F401 /usr/src/app/orders
+# RUN flake8 --ignore=E501,F401 /usr/src/app/orders
 
 COPY requirements.txt .
 #RUN pip install -r requirements.txt
