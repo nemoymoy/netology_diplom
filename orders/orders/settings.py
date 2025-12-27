@@ -32,6 +32,7 @@ DEBUG = bool(os.getenv("DEBUG", default=0)) # Значение в файле п�
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(",") # Значение в файле переменных .env
 
+CSRF_TRUSTED_ORIGINS = ["http://localhost:1337"]
 
 # Application definition
 
