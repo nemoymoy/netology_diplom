@@ -20,7 +20,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -32,7 +31,12 @@ DEBUG = bool(os.getenv("DEBUG", default=0)) # Значение в файле п�
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(",") # Значение в файле переменных .env
 
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:1337"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:1337",
+    "http://localhost:1337",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
 
 # Application definition
 
@@ -43,6 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'users.apps.UsersConfig', # новая модель пользователя вместо встроенной модели User
 
     'backend'           # Добавлено приложение
 ]
@@ -62,7 +68,7 @@ ROOT_URLCONF = 'orders.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"], # используем каталог шаблонов на уровне проекта
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -111,6 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'backend.CustomUser' # новая модель пользователя вместо встроенной модели User
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
@@ -137,3 +144,6 @@ STATIC_ROOT = BASE_DIR / "static"
 # Аналогично с media файлами
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
