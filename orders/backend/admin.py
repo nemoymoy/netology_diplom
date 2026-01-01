@@ -25,52 +25,75 @@ class CustomUserAdmin(UserAdmin):
     )
 
     list_display = ['email', 'username', 'first_name', 'last_name', "is_staff", "is_active"]
+    ordering = ('email',)
+    list_filter = ('is_active', 'is_staff', 'is_superuser')
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(is_active=True)
+
+    def is_staff_display(self, obj):
+        return "Yes" if obj.is_staff else "No"
+
+    is_staff_display.short_description = 'Is Staff'
 
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'url', 'status')
+    search_fields = ['name']
+    list_filter = ('status',)
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'shops')
+    search_fields = ['name']
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'category')
+    search_fields = ['name']
 
 
 @admin.register(ProductInfo)
 class ProductInfoAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('model', 'external_id', 'product', 'shop', 'quantity', 'price', 'price_rrc')
+    search_fields = ['product__name']
+    list_filter = ('model', 'product',)
 
 
 @admin.register(Parameter)
 class ParameterAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name',)
+    search_fields = ['name']
 
 
 @admin.register(ProductParameter)
 class ProductParameterAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('product_info', 'parameter', 'value')
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user', 'dt', 'status', 'contact')
+    search_fields = ['user__email']
+    list_filter = ('status',)
 
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('order', 'product_info', 'quantity')
 
 
 @admin.register(ContactInfo)
 class ContactAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user', 'city', 'street', 'house_number', 'structure', 'building', 'apartment', 'phone')
+    search_fields = ['city', 'street']
 
 
 @admin.register(ConfirmEmailToken)
 class ConfirmEmailTokenAdmin(admin.ModelAdmin):
     list_display = ('user', 'key', 'created_at',)
+    search_fields = ['user__email']
+    list_filter = ('user',)

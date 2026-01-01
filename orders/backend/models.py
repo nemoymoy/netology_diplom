@@ -196,7 +196,7 @@ class ContactInfo(models.Model):
                              on_delete=models.CASCADE)
     city = models.CharField(verbose_name='Город', max_length=50)
     street = models.CharField(verbose_name='Улица', max_length=100)
-    house = models.CharField(verbose_name='Дом', max_length=15, blank=True)
+    house_number = models.CharField(verbose_name='№ дома', max_length=15, blank=True)
     structure = models.CharField(verbose_name='Корпус', max_length=15, blank=True)
     building = models.CharField(verbose_name='Строение',max_length=15, blank=True)
     apartment = models.CharField(verbose_name='Квартира', max_length=15, blank=True)
