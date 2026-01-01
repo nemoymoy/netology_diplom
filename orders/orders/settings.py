@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'users.apps.UsersConfig', # новая модель пользователя вместо встроенной модели User
+    'backend.apps.UsersConfig', # новая модель пользователя вместо встроенной модели User
 
     'backend'           # Добавлено приложение
 ]
