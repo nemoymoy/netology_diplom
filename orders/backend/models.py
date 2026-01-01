@@ -146,11 +146,12 @@ class Product(models.Model):
         verbose_name_plural = "Продукты"
 
 class ProductInfo(models.Model):
+    model = models.CharField(verbose_name='Модель', max_length=80, blank=True)
+    external_id = models.PositiveIntegerField(verbose_name='Внешний ИД')
     product = models.ForeignKey(Product, verbose_name="Продукт", related_name="product_for_product_info", blank=True,
                                 on_delete=models.CASCADE)
     shop = models.ForeignKey(Shop, verbose_name="Магазин", related_name="shop_for_info", blank=True,
                              on_delete=models.CASCADE)
-    name = models.CharField(verbose_name="Модель", max_length=50, blank=True)
     quantity = models.PositiveIntegerField(verbose_name="Количество")
     price = models.PositiveIntegerField(verbose_name="Цена")
     price_rrc = models.PositiveIntegerField(verbose_name="Рекомендуемая цена")
@@ -159,10 +160,9 @@ class ProductInfo(models.Model):
         return self.product.name
 
     class Meta:
-        ordering = ['-name']
         verbose_name = "Информация о продукте"
         verbose_name_plural = "Информация о продуктах"
-        constrains = [models.UniqueConstraint(fields=['product', 'shop', 'name'], name='unique_product_shop')]
+        constraints = [models.UniqueConstraint(fields=['product', 'shop', 'external_id'], name='unique_product_info')]
 
 class Parameter(models.Model):
     name = models.CharField(verbose_name="Название параметра", max_length=50, blank=True)
