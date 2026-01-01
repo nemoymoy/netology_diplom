@@ -46,7 +46,7 @@ class ShopAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'shops')
+    list_display = ('name',)
     search_fields = ['name']
 
 
