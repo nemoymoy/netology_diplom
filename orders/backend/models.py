@@ -57,13 +57,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     username_validator = UnicodeUsernameValidator() if six.PY3 else ASCIIUsernameValidator()
 
-    username = models.CharField(verbose_name='Имя пользователя', max_length=150, unique=True,
+    username = models.CharField(verbose_name='Псевдоним', max_length=150, unique=True,
                                 help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
                                 validators=[username_validator],
                                 error_messages={'unique': _("A user with that username already exists.")}
                                 )
-    first_name = models.CharField(max_length=30, blank=True)
-    last_name = models.CharField(max_length=30, blank=True)
+    first_name = models.CharField(verbose_name='Фамилия', max_length=30, blank=True)
+    last_name = models.CharField(verbose_name='Имя',max_length=30, blank=True)
     is_staff = models.BooleanField(verbose_name="Администратор", default=False,
                                    help_text=_("Designates whether the user can log into this admin site.")
                                    )
