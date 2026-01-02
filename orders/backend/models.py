@@ -8,6 +8,10 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from datetime import timedelta
 
+from easy_thumbnails.fields import ThumbnailerImageField
+from .tasks import create_thumbnail_for_product, create_thumbnail_for_user_avatar
+
+
 import six
 
 USER_TYPE_CHOICES = (('shop', 'Магазин'), ('buyer', 'Покупатель'))
@@ -284,3 +288,27 @@ class ConfirmEmailToken(models.Model):
     def set_expiry(self, seconds):
         """Для установки срока действия для этого токена."""
         self.expires = self.created_at + timedelta(seconds=seconds)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
+    avatar = ThumbnailerImageField(upload_to='avatars/', blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        super(UserProfile, self).save(*args, **kwargs)
+        if self.avatar:
+            create_thumbnail_for_user_avatar.delay(self.user.id)
+
+    def __str__(self):
+        return self.user.username
+
+class ProductProfile(models.Model):
+    name = models.CharField(max_length=100)
+    image = ThumbnailerImageField(upload_to='products/', blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        super(ProductProfile, self).save(*args, **kwargs)
+        if self.image:
+            create_thumbnail_for_product.delay(self.id)
+
+    def __str__(self):
+        return self.name
