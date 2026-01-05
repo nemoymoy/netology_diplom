@@ -101,18 +101,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.email = self.__class__.objects.normalize_email(self.email)
 
     def get_full_name(self):
-        """
-        Return the first_name plus the last_name, with a space in between.
-        """
         full_name = "%s %s" % (self.first_name, self.last_name)
         return full_name.strip()
 
     def get_short_name(self):
-        """Return the short name for the user."""
         return self.first_name
 
     def email_user(self, subject, message, from_email=None, **kwargs):
-        """Email this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
 class Shop(models.Model):
@@ -164,7 +159,7 @@ class ProductInfo(models.Model):
     external_id = models.PositiveIntegerField(verbose_name='Внешний ИД')
     product = models.ForeignKey(Product, verbose_name="Продукт", related_name="product_for_product_info", blank=True,
                                 on_delete=models.CASCADE)
-    shop = models.ForeignKey(Shop, verbose_name="Магазин", related_name="shop_for_info", blank=True,
+    shop = models.ForeignKey(Shop, verbose_name="Магазин", related_name="shop_for_product_info", blank=True,
                              on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name="Количество")
     price = models.PositiveIntegerField(verbose_name="Цена")
@@ -194,7 +189,7 @@ class ProductParameter(models.Model):
     objects = models.manager.Manager()
     product_info = models.ForeignKey(ProductInfo, verbose_name="Информация о продукте",
                                      related_name="product_info_for_product_parameter", blank=True, on_delete=models.CASCADE)
-    parameter = models.ForeignKey(Parameter, verbose_name="Параметр", related_name="parameter_for_parameter",
+    parameter = models.ForeignKey(Parameter, verbose_name="Параметр", related_name="parameter_for_product_parameter",
                                   blank=True, on_delete=models.CASCADE)
     value = models.CharField(verbose_name="Значение параметра", max_length=50)
 
@@ -233,7 +228,8 @@ class Order(models.Model):
                              on_delete=models.CASCADE)
     dt = models.DateTimeField(auto_now_add=True)
     status = models.CharField(verbose_name='Статус', choices=STATE_CHOICES, max_length=15)
-    contact = models.ForeignKey(ContactInfo, verbose_name='Контакт', blank=True, null=True, on_delete=models.CASCADE)
+    contact = models.ForeignKey(ContactInfo, verbose_name='Контакт', related_name='contact_for_order', blank=True,
+                                null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.dt} {self.contact}'
