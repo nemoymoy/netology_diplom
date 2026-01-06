@@ -82,6 +82,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     group = models.ManyToManyField(Group, verbose_name='Группа', related_name="group_for_user", blank=True)
     permission = models.ManyToManyField(Permission, verbose_name='Разрешение', related_name="permission_for_user",
                                         blank=True)
+    type = models.CharField(max_length=50, null=True, blank=True)
 
     objects = CustomUserManager()
 
