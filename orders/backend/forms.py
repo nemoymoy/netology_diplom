@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AdminUserCreationForm
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -11,17 +11,17 @@ from django.contrib.auth.decorators import login_required
 
 from .serializers import ContactInfoSerializer
 
-class CustomUserCreationForm(UserCreationForm):
+class CustomUserCreationForm(AdminUserCreationForm):
 
-    class Meta:
+    class Meta(AdminUserCreationForm.Meta):
         model = CustomUser
-        fields = ('username', 'email')
+        fields = AdminUserCreationForm.Meta.fields + ('email',)
 
 class CustomUserChangeForm(UserChangeForm):
 
-    class Meta:
+    class Meta(UserChangeForm.Meta):
         model = CustomUser
-        fields = ('username', 'email')
+        fields = UserChangeForm.Meta.fields + ('email',)
 
 class RegisterForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=True)

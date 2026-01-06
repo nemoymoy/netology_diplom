@@ -15,7 +15,7 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     model = CustomUser
 
-    fieldsets = (
+    add_fieldsets = (
         (None, {'fields': ('email', 'password', 'type')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'company', 'position')}),
         ('Permissions', {
