@@ -16,7 +16,7 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
 
     add_fieldsets = (
-        (None, {'fields': ('email', 'password', 'type')}),
+        (None, {'fields': ('username', 'email', 'password', 'type')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'company', 'position')}),
         ('Permissions', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
@@ -24,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
-    list_display = ['email', 'username', 'first_name', 'last_name', "is_staff", "is_active"]
+    list_display = ['username', 'email', 'password', 'type', 'first_name', 'last_name', 'company', 'position', "is_staff", "is_active"]
     ordering = ('email',)
     list_filter = ('is_active', 'is_staff', 'is_superuser')
 
