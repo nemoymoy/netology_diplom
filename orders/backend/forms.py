@@ -15,13 +15,13 @@ class CustomUserCreationForm(AdminUserCreationForm):
 
     class Meta(AdminUserCreationForm.Meta):
         model = CustomUser
-        fields = AdminUserCreationForm.Meta.fields + ('email',)
+        fields = AdminUserCreationForm.Meta.fields
 
 class CustomUserChangeForm(UserChangeForm):
 
     class Meta(UserChangeForm.Meta):
         model = CustomUser
-        fields = UserChangeForm.Meta.fields + ('email',)
+        fields = UserChangeForm.Meta.fields
 
 class RegisterForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=True)
