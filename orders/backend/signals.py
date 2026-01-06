@@ -14,30 +14,30 @@ User = get_user_model()
 
 new_user_registered = Signal() # Уведомляет о создании нового пользователя.
 new_order = Signal() # Уведомляет о создании нового заказа.
-pre_password_reset = Signal()  # providing_args=["user", "reset_password_token"]
-post_password_reset = Signal()  # providing_args=["user", "reset_password_token"]
+
+pre_password_reset = Signal()
+post_password_reset = Signal()
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, **kwargs):
     msg = EmailMultiAlternatives(subject=f"Password Reset Token for {reset_password_token.user}",
                                  body=reset_password_token.key, from_email=settings.EMAIL_HOST_USER,
-                                 to=[reset_password_token.email])
+                                 to=[reset_password_token.user.email])
     msg.send()
 
-@receiver(post_save, sender=CustomUser)
-def new_user_registered_signal(sender: Type[CustomUser], instance: CustomUser, created: bool, **kwargs):
-    if created and not instance.is_active:
-        token, _ = ConfirmEmailToken.objects.get_or_create(user_id=instance.pk)
-        msg = EmailMultiAlternatives(subject=f"Password Reset Token for {instance.email}", body=token.key,
-                                     from_email=settings.EMAIL_HOST_USER, to=[instance.email])
-        msg.send()
+@receiver(new_user_registered)
+def new_user_registered_signal(user_id, **kwargs):
+    token, _ = ConfirmEmailToken.objects.get_or_create(user_id=user_id)
+    msg = EmailMultiAlternatives(subject=f"Password Reset Token for {token.user.email}", body=token.key,
+                                 from_email=settings.EMAIL_HOST_USER, to=[token.user.email])
+    msg.send()
 
 @receiver(post_save, sender=CustomUser)
 def authorization(sender, instance, created, **kwargs):
     if created:
         token = ConfirmEmailToken.objects.create(user=instance)
         email = instance.email
-        confirmation_link = f"http://127.0.0.1:8000/api/v1/user/confirm-email/?token={quote(token.key)}&email={quote(email)}"
+        confirmation_link = f"http://127.0.0.1:1337/api/v1/user/confirm-email/?token={quote(token.key)}&email={quote(email)}"
         subject = 'Пожалуйста, подтвердите свой адрес электронной почты'
         message = f'Чтобы подтвердить свой адрес электронной почты, перейдите по этой ссылке: {confirmation_link}'
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [instance.email])

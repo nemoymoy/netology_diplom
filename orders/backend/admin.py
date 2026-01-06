@@ -33,7 +33,7 @@ class CustomUserAdmin(UserAdmin):
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
-    list_display = ['username', 'email', 'password', 'type', 'first_name', 'last_name', 'company', 'position', "is_staff", "is_active"]
+    list_display = ['email', 'username', 'type', 'first_name', 'last_name', 'company', 'position', "is_staff", "is_active", 'is_superuser']
     ordering = ('email',)
     list_filter = ('is_active', 'is_staff', 'is_superuser')
 

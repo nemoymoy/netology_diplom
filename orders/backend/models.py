@@ -3,16 +3,18 @@ from easy_thumbnails.fields import ThumbnailerImageField
 from .tasks import create_thumbnail_for_product, create_thumbnail_for_user_avatar
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
-from django.contrib.auth.validators import UnicodeUsernameValidator, ASCIIUsernameValidator
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.hashers import make_password
 from django.db import models
+from django.db.models import Sum
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.tokens import get_token_generator
 from django.utils import timezone
 from django.core.mail import send_mail
 from datetime import timedelta
 
-import six
+# from django.contrib.auth.validators import ASCIIUsernameValidator
+# import six
 
 USER_TYPE_CHOICES = (('shop', 'Магазин'), ('buyer', 'Покупатель'))
 
@@ -60,21 +62,22 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     company = models.CharField(verbose_name='Компания', max_length=40, blank=True)
     position = models.CharField(verbose_name='Должность', max_length=40, blank=True)
 
-    username_validator = UnicodeUsernameValidator() if six.PY3 else ASCIIUsernameValidator()
+    # username_validator = UnicodeUsernameValidator() if six.PY3 else ASCIIUsernameValidator()
+    username_validator = UnicodeUsernameValidator()
 
     username = models.CharField(verbose_name='Псевдоним', max_length=150, unique=True,
-                                help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+                                help_text=_('Требования. Не более 150 символов. Только буквы, цифры и @/./+/-/_.'),
                                 validators=[username_validator],
-                                error_messages={'unique': _("A user with that username already exists.")}
+                                error_messages={'unique': _("Пользователь с таким именем пользователя уже существует.")}
                                 )
     first_name = models.CharField(verbose_name='Имя', max_length=30, blank=True)
     last_name = models.CharField(verbose_name='Фамилия',max_length=30, blank=True)
     is_staff = models.BooleanField(verbose_name="Администратор", default=False,
-                                   help_text=_("Designates whether the user can log into this admin site.")
+                                   help_text=_("Определяет, может ли пользователь войти на этот сайт администратора.")
                                    )
-    is_active = models.BooleanField(verbose_name="Активен", default=True,
-                                    help_text=_("Designates whether this user should be treated as active. "
-                                                "Unselect this instead of deleting accounts.")
+    is_active = models.BooleanField(verbose_name="Активен", default=False,
+                                    help_text=_("Определяет, следует ли считать этого пользователя активным."
+                                                "Снимите этот флажок вместо удаления учетных записей.")
                                     )
     type = models.CharField(verbose_name='Тип пользователя', choices=USER_TYPE_CHOICES, max_length=5,
                                  default='buyer')
@@ -234,6 +237,10 @@ class Order(models.Model):
 
     def __str__(self):
         return f'{self.dt} {self.contact}'
+
+    @property
+    def sum(self):
+        return self.ordered_items.aggregate(total=Sum("quantity"))["total"]
 
     class Meta:
         ordering = ['-dt']
