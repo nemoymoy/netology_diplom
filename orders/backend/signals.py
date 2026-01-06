@@ -40,7 +40,8 @@ def authorization(sender, instance, created, **kwargs):
         confirmation_link = f"http://127.0.0.1:1337/api/v1/user/confirm-email/?token={quote(token.key)}&email={quote(email)}"
         subject = 'Пожалуйста, подтвердите свой адрес электронной почты'
         message = f'Чтобы подтвердить свой адрес электронной почты, перейдите по этой ссылке: {confirmation_link}'
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [instance.email])
+        send_mail(subject=subject, message=message, from_email=settings.DEFAULT_FROM_EMAIL,
+                  recipient_list=[instance.email])
 
 @receiver(new_order)
 def new_order_signal(user_id, **kwargs):
