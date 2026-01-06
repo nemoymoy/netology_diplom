@@ -181,16 +181,16 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',  # Для Google
-    'social_core.backends.facebook.FacebookOAuth2',  # Для Facebook (если нужно)
+    # 'social_core.backends.google.GoogleOAuth2',  # Для Google
+    # 'social_core.backends.facebook.FacebookOAuth2',  # Для Facebook (если нужно)
     'django.contrib.auth.backends.ModelBackend',  # Стандартная авторизация
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '<YOUR_GOOGLE_CLIENT_ID>'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '<YOUR_GOOGLE_CLIENT_SECRET>'
-
-# Facebook
-SOCIAL_AUTH_FACEBOOK_KEY = '<YOUR_FACEBOOK_APP_ID>'
-SOCIAL_AUTH_FACEBOOK_SECRET = '<YOUR_FACEBOOK_APP_SECRET>'
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '<YOUR_GOOGLE_CLIENT_ID>'
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '<YOUR_GOOGLE_CLIENT_SECRET>'
+#
+# # Facebook
+# SOCIAL_AUTH_FACEBOOK_KEY = '<YOUR_FACEBOOK_APP_ID>'
+# SOCIAL_AUTH_FACEBOOK_SECRET = '<YOUR_FACEBOOK_APP_SECRET>'
 
 
