@@ -76,13 +76,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                                     help_text=_("Designates whether this user should be treated as active. "
                                                 "Unselect this instead of deleting accounts.")
                                     )
-    user_type = models.CharField(verbose_name='Тип пользователя', choices=USER_TYPE_CHOICES, max_length=5,
+    type = models.CharField(verbose_name='Тип пользователя', choices=USER_TYPE_CHOICES, max_length=5,
                                  default='buyer')
     date_joined = models.DateTimeField(verbose_name="Дата присоединения", default=timezone.now)
     group = models.ManyToManyField(Group, verbose_name='Группа', related_name="group_for_user", blank=True)
     permission = models.ManyToManyField(Permission, verbose_name='Разрешение', related_name="permission_for_user",
                                         blank=True)
-    type = models.CharField(max_length=50, null=True, blank=True)
+
 
     objects = CustomUserManager()
 

@@ -390,7 +390,7 @@ class PartnerUpdate(APIView):
     def post(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=403)
-        if request.user.user_type != 'shop':
+        if request.user.type != 'shop':
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
         url = request.data.get('url')
         if url:
