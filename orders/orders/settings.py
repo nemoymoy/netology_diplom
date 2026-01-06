@@ -57,10 +57,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_spectacular',
+
+    'backend',           # Добавлено приложение
     'rest_framework',
     'rest_framework.authtoken',
     'django_rest_passwordreset',
-    'backend'           # Добавлено приложение
+
+    'easy_thumbnails',
+    'filer',
+    'mptt',
 ]
 
 MIDDLEWARE = [
@@ -157,3 +163,34 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Для TokenAuthentication
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '3/minute',  # Для неаутентифицированных пользователей
+        'user': '5/minute',  # Для аутентифицированных пользователей
+    }
+}
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',  # Для Google
+    'social_core.backends.facebook.FacebookOAuth2',  # Для Facebook (если нужно)
+    'django.contrib.auth.backends.ModelBackend',  # Стандартная авторизация
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '<YOUR_GOOGLE_CLIENT_ID>'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '<YOUR_GOOGLE_CLIENT_SECRET>'
+
+# Facebook
+SOCIAL_AUTH_FACEBOOK_KEY = '<YOUR_FACEBOOK_APP_ID>'
+SOCIAL_AUTH_FACEBOOK_SECRET = '<YOUR_FACEBOOK_APP_SECRET>'
+
+

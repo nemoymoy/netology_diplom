@@ -1,3 +1,7 @@
+
+from easy_thumbnails.fields import ThumbnailerImageField
+from .tasks import create_thumbnail_for_product, create_thumbnail_for_user_avatar
+
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from django.contrib.auth.validators import UnicodeUsernameValidator, ASCIIUsernameValidator
 from django.contrib.auth.hashers import make_password
@@ -7,10 +11,6 @@ from django_rest_passwordreset.tokens import get_token_generator
 from django.utils import timezone
 from django.core.mail import send_mail
 from datetime import timedelta
-
-from easy_thumbnails.fields import ThumbnailerImageField
-from .tasks import create_thumbnail_for_product, create_thumbnail_for_user_avatar
-
 
 import six
 
@@ -286,13 +286,14 @@ class ConfirmEmailToken(models.Model):
         self.expires = self.created_at + timedelta(seconds=seconds)
 
 class UserProfile(models.Model):
-    user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, verbose_name="Пользователь", related_name='user_for_user_profile',
+                             blank=True, on_delete=models.CASCADE)
     avatar = ThumbnailerImageField(upload_to='avatars/', blank=True, null=True)
 
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
         if self.avatar:
-            create_thumbnail_for_user_avatar.delay(self.user.id)
+            create_thumbnail_for_user_avatar.delay(self.user.id, UserProfile)
 
     def __str__(self):
         return self.user.username
@@ -304,7 +305,7 @@ class ProductProfile(models.Model):
     def save(self, *args, **kwargs):
         super(ProductProfile, self).save(*args, **kwargs)
         if self.image:
-            create_thumbnail_for_product.delay(self.id)
+            create_thumbnail_for_product.delay(self.id, ProductProfile)
 
     def __str__(self):
         return self.name
