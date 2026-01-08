@@ -502,15 +502,17 @@ def login_page(request):
 
 def register_page(request):
     if request.method == 'POST':
+        email = request.POST.get('email')
+        username = request.POST.get('username')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
-        username = request.POST.get('username')
         password = request.POST.get('password')
         user = CustomUser.objects.filter(username=username)
         if user.exists():
             messages.info(request, "Username already taken!")
             return redirect('/register/')
         user = CustomUser.objects.create_user(
+            email=email,
             first_name=first_name,
             last_name=last_name,
             username=username
