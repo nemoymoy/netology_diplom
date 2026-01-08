@@ -1,4 +1,4 @@
-from django.contrib.auth.views import LogoutView
+
 from django.urls import path
 
 from .views import index_page, home_page, login_page, register_page, logout_handler
