@@ -21,8 +21,8 @@ from rest_framework.test import APIClient
 def register_account_success():
     """Тест успешной регистрации пользователя."""
     client = APIClient()
-    url = reverse('register-account')  # Название эндпоинта в urls.py
-    # url = "http://127.0.0.1:1337/api/v1/user/register"
+    # url = reverse('register-account')  # Название эндпоинта в urls.py
+    url = "http://127.0.0.1:1337/api/v1/user/register"
 
     data = {
         "email": "nemoymoy@yandex.ru",
