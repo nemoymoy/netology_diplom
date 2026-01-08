@@ -476,7 +476,7 @@ class PartnerOrders(APIView):
 
 
 
-@login_required(login_url="/login/")
+@login_required(login_url="//:1337/api/v1/login/")
 def home_page(request):
     return render(request, 'home.html')
 
@@ -491,14 +491,14 @@ def login_page(request):
         password = request.POST.get('password')
         if not CustomUser.objects.filter(username=username).exists():
             messages.error(request, 'Invalid Username')
-            return redirect('/login/')
+            return redirect('//:1337/api/v1/login/')
         user = authenticate(username=username, password=password)
         if user is None:
             messages.error(request, "Invalid Password")
-            return redirect('/login/')
+            return redirect('//:1337/api/v1/login/')
         else:
             login(request, user)
-            return redirect('/home/')
+            return redirect('//:1337/api/v1/home/')
     return render(request, 'login.html')
 
 
@@ -512,7 +512,7 @@ def register_page(request):
         user = CustomUser.objects.filter(username=username)
         if user.exists():
             messages.info(request, "Username already taken!")
-            return redirect('/register/')
+            return redirect('//:1337/api/v1/register/')
         user = CustomUser.objects.create_user(
             email=email,
             first_name=first_name,
@@ -522,10 +522,10 @@ def register_page(request):
         user.set_password(password)
         user.save()
         messages.info(request, "Account created Successfully!")
-        return redirect('/register/')
+        return redirect('//:1337/api/v1/register/')
     return render(request, 'register.html')
 
 @login_required
 def logout_handler(request):
     logout(request)
-    return redirect('/')
+    return redirect('//:1337/api/v1/')
