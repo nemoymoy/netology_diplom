@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'company', 'position', 'contacts')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'company', 'position', 'is_active', 'contacts')
         read_only_fields = ('id',)
 
 class UserCreateSerializer(UserSerializer):
@@ -36,7 +36,7 @@ class UserCreateSerializer(UserSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'first_name', 'last_name', 'password', 'email', 'company', 'position')
+        fields = ('id', 'username', 'first_name', 'last_name', 'password', 'email', 'company', 'position', 'is_active')
         read_only_fields = ('id',)
 
 class UserLoginSerializer(serializers.ModelSerializer):
