@@ -487,12 +487,12 @@ def index_page(request):
 
 def login_page(request):
     if request.method == "POST":
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
-        if not CustomUser.objects.filter(username=username).exists():
+        if not CustomUser.objects.filter(email=email).exists():
             messages.error(request, 'Invalid Username')
             return redirect('/login/')
-        user = authenticate(username=username, password=password)
+        user = authenticate(email=email, password=password)
         if user is None:
             messages.error(request, "Invalid Password")
             return redirect('/login/')
