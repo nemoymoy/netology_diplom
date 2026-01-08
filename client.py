@@ -1,13 +1,28 @@
 import requests
 
-from django.urls import reverse
-from rest_framework.test import APIClient
+# from django.urls import reverse
+# from rest_framework.test import APIClient
 
 # Создание пользователя
 
-# print("Создание двух пользователей и одного админа")
-# data = requests.post("http://127.0.0.1:8000/api/v1/user", json={"name": "user_1", "password": "12345678"})
-# print(data.status_code)
+print("Создание пользователя админа")
+data = requests.post(url="http://127.0.0.1:1337/api/v1/user/register",
+                     json={
+                            "email": "nemoymoy@yandex.ru",
+                            "password": "Aa12345678!",
+                            "company": "Example Inc",
+                            "position": "Manager",
+                            "username": "nemo",
+                            "first_name": "John",
+                            "last_name": "Doe",
+                            "is_active": True,
+                            "is_staff": True,
+                            "is_superuser": False,
+                            "type": "buyer",
+                     }
+                     )
+print(data.status_code)
+
 # print(data.json())
 # data = requests.post("http://127.0.0.1:8000/api/v1/user", json={"name": "user_2", "password": "67891012"})
 # print(data.status_code)
@@ -18,30 +33,30 @@ from rest_framework.test import APIClient
 # print(data.status_code)
 # print(data.json())
 
-def register_account_success():
-    """Тест успешной регистрации пользователя."""
-    client = APIClient()
-    # url = reverse('register-account')  # Название эндпоинта в urls.py
-    url = "http://127.0.0.1:1337/api/v1/user/register"
-
-    data = {
-        "email": "nemoymoy@yandex.ru",
-        "password": "Aa12345678!",
-        "company": "Example Inc",
-        "position": "Manager",
-        "username": "nemo",
-        "first_name": "John",
-        "last_name": "Doe",
-        "is_active": True,
-        "is_staff": True,
-        "is_superuser": False,
-        "type": "buyer"
-    }
-
-    response = client.post(url, data)
-
-    assert response.status_code == 200
-    assert response.json().get('Status') is True
-
-if __name__ == "__main__":
-    register_account_success()
+# def register_account_success():
+#     """Тест успешной регистрации пользователя."""
+#     client = APIClient()
+#     # url = reverse('register-account')  # Название эндпоинта в urls.py
+#     url = "http://127.0.0.1:1337/api/v1/user/register"
+#
+#     data = {
+#         "email": "nemoymoy@yandex.ru",
+#         "password": "Aa12345678!",
+#         "company": "Example Inc",
+#         "position": "Manager",
+#         "username": "nemo",
+#         "first_name": "John",
+#         "last_name": "Doe",
+#         "is_active": True,
+#         "is_staff": True,
+#         "is_superuser": False,
+#         "type": "buyer"
+#     }
+#
+#     response = client.post(url, data)
+#
+#     assert response.status_code == 200
+#     assert response.json().get('Status') is True
+#
+# if __name__ == "__main__":
+#     register_account_success()
