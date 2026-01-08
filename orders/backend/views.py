@@ -34,7 +34,7 @@ from .signals import new_order
 class RegisterAccount(APIView):
     @staticmethod
     def post(request, *args, **kwargs):
-        if {'first_name', 'last_name', 'email', 'password', 'company', 'position'}.issubset(request.data):
+        if {'username', 'first_name', 'last_name', 'email', 'password', 'company', 'position'}.issubset(request.data):
             try:
                 validate_password(request.data['password'])
             except Exception as password_error:

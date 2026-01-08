@@ -22,18 +22,21 @@ class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
     first_name = serializers.CharField(validators=[UnicodeUsernameValidator()])
     last_name = serializers.CharField(validators=[UnicodeUsernameValidator()])
+    username = serializers.CharField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'first_name', 'last_name', 'email', 'company', 'position', 'contacts')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'company', 'position', 'contacts')
         read_only_fields = ('id',)
 
 class UserCreateSerializer(UserSerializer):
     password = serializers.CharField(validators=[password_validation.validate_password])
+    email = serializers.EmailField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
+    username = serializers.CharField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'first_name', 'last_name', 'password', 'email', 'company', 'position')
+        fields = ('id', 'username', 'first_name', 'last_name', 'password', 'email', 'company', 'position')
         read_only_fields = ('id',)
 
 class UserLoginSerializer(serializers.ModelSerializer):
