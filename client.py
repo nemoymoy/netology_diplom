@@ -18,7 +18,7 @@ from rest_framework.test import APIClient
 # print(data.status_code)
 # print(data.json())
 
-def test_register_account_success():
+def register_account_success():
     """Тест успешной регистрации пользователя."""
     client = APIClient()
     url = reverse('register-account')  # Название эндпоинта в urls.py
@@ -44,4 +44,4 @@ def test_register_account_success():
     assert response.json().get('Status') is True
 
 if __name__ == "__main__":
-    test_register_account_success()
+    register_account_success()
