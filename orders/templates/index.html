@@ -1,10 +1,10 @@
-<!-- templates/home.html -->
+<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
+    <title>Index Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,25 +15,15 @@
             justify-content: center;
             align-items: center;
         }
-        .container {
+        .content-container {
             text-align: center;
-            padding: 40px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
         }
         h1 {
-            color: green;
-            font-weight: bold;
-            font-size: 2em;
+            font-size: 2.5em;
+            color: #333;
             margin-bottom: 20px;
         }
-        img {
-            width: 60%;
-            margin-bottom: 20px;
-        }
-        button {
+        .button-container button {
             background-color: #007bff;
             color: white;
             padding: 15px 30px;
@@ -44,15 +34,11 @@
             font-size: 16px;
             transition: background-color 0.3s ease;
         }
-        button:hover {
+        .button-container button:hover {
             background-color: #0056b3;
         }
         @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-                width: 90%;
-            }
-            button {
+            .button-container button {
                 width: 100%;
                 margin: 5px 0;
             }
@@ -60,12 +46,13 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to Geeksforgeeks. This page is only visible to users which are logged in.</h1>
-      	<form method="POST" action="{% url 'logout' %}">
-          	{% csrf_token %}
-          <button class="btn btn-primary">Logout</button>
-      	</form>
+    <div class="content-container">
+        <h1>Index Page</h1>
+        <div class="button-container">
+            <button onclick="window.location.href='/login';">Login</button>
+            <button onclick="window.location.href='/register';">Register</button>
+            <button onclick="window.location.href='/home';">Home</button>
+        </div>
     </div>
 </body>
 </html>
