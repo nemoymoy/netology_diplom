@@ -234,6 +234,7 @@ class Order(models.Model):
     status = models.CharField(verbose_name='Статус', choices=STATE_CHOICES, max_length=15)
     contact = models.ForeignKey(ContactInfo, verbose_name='Контакт', related_name='contact_for_order', blank=True,
                                 null=True, on_delete=models.CASCADE)
+    ordered_items = models.PositiveIntegerField(verbose_name='Заказанные позиции', blank=True, null=True)
 
     def __str__(self):
         return f'{self.dt} {self.contact}'
