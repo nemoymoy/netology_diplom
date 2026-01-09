@@ -184,9 +184,10 @@ def test_shop_create_success():
     client.force_authenticate(user=user)
 
     data = {
+        "email": "nemoymoy@yandex.ru",
+        "password": "Aa12345678!",
         "name": "Test Shop",
         "url": "shop@example.com",
-        "email": "nemoymoy@yandex.ru"
     }
 
     response = client.post(url, data)
