@@ -42,7 +42,7 @@ def test_register_account_missing_fields():
 
     data = {
         "first_name": "John",
-        "email": "johndoe@example.com"
+        "email": "nemoymoy@yandex.ru"
     }
 
     response = client.post(url, data)
@@ -59,12 +59,15 @@ def test_register_account_weak_password():
     url = reverse('user-register')
 
     data = {
-        "first_name": "John",
-        "last_name": "Doe",
-        "email": "johndoe@example.com",
+        "email": "nemoymoy@yandex.ru",
         "password": "123",
         "company": "Example Inc",
-        "position": "Manager"
+        "position": "Manager",
+        "username": "django",
+        "first_name": "John",
+        "last_name": "Doe",
+        "is_active": True,
+        "type": "buyer",
     }
 
     response = client.post(url, data)
@@ -111,7 +114,7 @@ def test_contact_view_get_authenticated():
         house_number='House Number',
         structure="Structure",
         building="Building",
-        appointment="Appointment",
+        apartment="Apartment",
         phone="1234567890")
 
     response = client.get(url)
