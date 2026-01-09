@@ -186,7 +186,6 @@ def test_shop_create_success():
     data = {
         "name": "Test Shop",
         "url": "shop@example.com",
-        "user": "nemoymoy@yandex.ru"
     }
 
     response = client.post(url, data)
