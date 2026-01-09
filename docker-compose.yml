@@ -58,7 +58,7 @@ services:
 
   celeryworker:
     container_name: celeryworker
-    build: .
+    build: ./orders
     volumes:
       - ./:/backend
     command: celery -A core.celery worker --pool=prefork -l info
@@ -67,7 +67,7 @@ services:
 
   celeryscheduler:
     container_name: celeryscheduler
-    build: .
+    build: ./orders
     volumes:
       - ./:/app
     command: celery -A core beat -l info
