@@ -81,7 +81,7 @@ def test_login_account_success():
     url = reverse('user-login')
 
     # Создаем пользователя
-    user = CustomUser.objects.create_user(email="johndoe@example.com", password="StrongPassword123!")
+    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!")
 
     data = {
         "email": "nemoymoy@yandex.ru",
@@ -104,7 +104,15 @@ def test_contact_view_get_authenticated():
     user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!")
     client.force_authenticate(user=user)
 
-    ContactInfo.objects.create(user=user, city="City", street="Street", phone="1234567890")
+    ContactInfo.objects.create(
+        user=user,
+        city="City",
+        street="Street",
+        house_number='House Number',
+        structure="Structure",
+        building="Building",
+        appointment="Appointment",
+        phone="1234567890")
 
     response = client.get(url)
 
