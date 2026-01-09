@@ -36,7 +36,7 @@ urlpatterns = [
 
     path('', index_page, name='index_page'),
     path('home', home_page, name='home_page'),
-    path('login', login_page, name='login_page'),
+    path('login', LoginAccount.as_view(), name='login_page'),
     path('register', register_page, name='register_page'),
     path('logout', logout_handler, name='logout_handler'),
 
