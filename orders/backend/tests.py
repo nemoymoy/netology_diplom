@@ -104,7 +104,7 @@ def test_login_account_success():
     response = client.post(url, data)
 
     assert response.status_code == 200
-    assert "Вы вошли в систему." in response.content.decode()
+    assert response.content.decode()["Status"] == "true"
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
