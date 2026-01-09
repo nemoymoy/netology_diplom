@@ -13,15 +13,18 @@ from .models import ContactInfo, Order, Shop, CustomUser
 def test_register_account_success():
     """Тест успешной регистрации пользователя."""
     client = APIClient()
-    url = reverse('register-account')  # Название эндпоинта в urls.py
+    url = reverse('user-register')  # Название эндпоинта в urls.py
 
     data = {
+        "email": "nemoymoy@yandex.ru",
+        "password": "Aa12345678!",
+        "company": "Example Inc",
+        "position": "Manager",
+        "username": "django",
         "first_name": "John",
         "last_name": "Doe",
-        "email": "nemoymoy@yandex.ru",
-        "password": "StrongPassword123!",
-        "company": "Example Inc",
-        "position": "Manager"
+        "is_active": True,
+        "type": "buyer",
     }
 
     response = client.post(url, data)
@@ -34,7 +37,7 @@ def test_register_account_success():
 def test_register_account_missing_fields():
     """Тест регистрации с отсутствующими обязательными полями."""
     client = APIClient()
-    url = reverse('register-account')
+    url = reverse('user-register')
 
     data = {
         "first_name": "John",
@@ -52,7 +55,7 @@ def test_register_account_missing_fields():
 def test_register_account_weak_password():
     """Тест регистрации с простым паролем, который не проходит валидацию."""
     client = APIClient()
-    url = reverse('register-account')
+    url = reverse('user-register')
 
     data = {
         "first_name": "John",
@@ -74,14 +77,14 @@ def test_register_account_weak_password():
 def test_login_account_success():
     """Тест успешного входа пользователя."""
     client = APIClient()
-    url = reverse('login-account')
+    url = reverse('user-login')
 
     # Создаем пользователя
     user = CustomUser.objects.create_user(email="johndoe@example.com", password="StrongPassword123!")
 
     data = {
         "email": "nemoymoy@yandex.ru",
-        "password": "StrongPassword123!"
+        "password": "Aa12345678!"
     }
 
     response = client.post(url, data)
@@ -94,10 +97,10 @@ def test_login_account_success():
 def test_contact_view_get_authenticated():
     """Тест получения контактов авторизованного пользователя."""
     client = APIClient()
-    url = reverse('contact-view')
+    url = reverse('user-contact')
 
     # Создаем пользователя и контакт
-    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="StrongPassword123!")
+    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!")
     client.force_authenticate(user=user)
 
     ContactInfo.objects.create(user=user, city="City", street="Street", phone="1234567890")
@@ -113,13 +116,13 @@ def test_contact_view_get_authenticated():
 def test_basket_view_get_authenticated():
     """Тест получения корзины авторизованного пользователя."""
     client = APIClient()
-    url = reverse('basket-view')
+    url = reverse('basket')
 
     # Создаем пользователя и корзину
-    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="StrongPassword123!")
+    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!")
     client.force_authenticate(user=user)
 
-    order = Order.objects.create(user=user, state="basket")
+    order = Order.objects.create(user=user, status="basket")
 
     response = client.get(url)
 
@@ -135,13 +138,13 @@ def test_shop_create_success():
     url = reverse('shop-create')
 
     # Создаем пользователя
-    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="StrongPassword123!", is_active=True)
+    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!", is_active=True)
     client.force_authenticate(user=user)
 
     data = {
         "name": "Test Shop",
-        "email": "shop@example.com",
-        "address": "123 Test Street"
+        "url": "shop@example.com",
+        "user": "nemoymoy@yandex.ru"
     }
 
     response = client.post(url, data)

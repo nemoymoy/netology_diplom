@@ -21,8 +21,8 @@ urlpatterns = [
     path('user/password_reset/confirm', reset_password_confirm, name='password-reset-confirm'), # Проверяет действительность токена и, если все в порядке, обновляет пароль пользователя в системе
 
     path('shops', ShopView.as_view(), name='shops'), # Для просмотра списка магазинов
-    path('shop/create', ShopCreate.as_view(), name='shop_create'),  # Создание магазина
-    path('shop/state', ShopStatus.as_view(), name='shop-state'),  # Класс изменения статуса магазина
+    path('shop/create', ShopCreate.as_view(), name='shop-create'),  # Создание магазина
+    path('shop/state', ShopStatus.as_view(), name='shop-status'),  # Класс изменения статуса магазина
 
     path('products', ProductInfoView.as_view(), name='product-search'), # Для поиска товаров
     path('categories', CategoryView.as_view(), name='categories'), # Для просмотра категорий
