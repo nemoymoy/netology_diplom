@@ -1,9 +1,13 @@
 from celery import shared_task
-from easy_thumbnails.files import get_thumbnailer
+# from easy_thumbnails.files import get_thumbnailer
 
 # from django.core.mail import send_mail
 # from django_rest_passwordreset.models import ResetPasswordToken
 from celery import shared_task
+
+from .models import AdditionResult
+
+
 # from django.core.exceptions import ValidationError
 # from django.contrib.auth.password_validation import validate_password, get_password_validators
 # from django.conf import settings
@@ -39,18 +43,27 @@ from celery import shared_task
 #         ResetPasswordToken.objects.filter(user=reset_password_token.user).delete()
 #     return {'status': 'OK'}
 
-@shared_task
-def create_thumbnail_for_product(product_id, model):
-    product = model.objects.get(id=product_id)
-    if product.image:
-        thumbnailer = get_thumbnailer(product.image)
-        thumbnail = thumbnailer.get_thumbnail({'size': (100, 100), 'crop': True})
-        thumbnail.save()
+# @shared_task
+# def create_thumbnail_for_product(product_id, model):
+#     product = model.objects.get(id=product_id)
+#     if product.image:
+#         thumbnailer = get_thumbnailer(product.image)
+#         thumbnail = thumbnailer.get_thumbnail({'size': (100, 100), 'crop': True})
+#         thumbnail.save()
+#
+# @shared_task
+# def create_thumbnail_for_user_avatar(user_id, model):
+#     user_profile = model.objects.get(user_id=user_id)
+#     if user_profile.avatar:
+#         thumbnailer = get_thumbnailer(user_profile.avatar)
+#         thumbnail = thumbnailer.get_thumbnail({'size': (100, 100), 'crop': True})
+#         thumbnail.save()
+
+result = 1
 
 @shared_task
-def create_thumbnail_for_user_avatar(user_id, model):
-    user_profile = model.objects.get(user_id=user_id)
-    if user_profile.avatar:
-        thumbnailer = get_thumbnailer(user_profile.avatar)
-        thumbnail = thumbnailer.get_thumbnail({'size': (100, 100), 'crop': True})
-        thumbnail.save()
+def add_numbers():
+    global result
+    print("Running add numbers periodic task")
+    result += result
+    AdditionResult.objects.create(answer=result)

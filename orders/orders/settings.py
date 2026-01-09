@@ -58,6 +58,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    "django_celery_results",
+    "django_celery_beat",
+
     'drf_spectacular',
 
     'backend',           # Добавлено приложение
@@ -163,7 +166,7 @@ STATIC_ROOT = BASE_DIR / "static"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-LOGIN_REDIRECT_URL = '/api/v1/login/'
+LOGIN_REDIRECT_URL = '/api/v1/user/login/'
 LOGOUT_REDIRECT_URL = '/api/v1/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
