@@ -84,7 +84,17 @@ def test_login_account_success():
     url = reverse('user-login')
 
     # Создаем пользователя
-    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!")
+    _user = CustomUser.objects.create_user(
+        email="nemoymoy@yandex.ru",
+        password="Aa12345678!",
+        company="Example Inc",
+        position="Manager",
+        username="django",
+        first_name="John",
+        last_name="Doe",
+        is_active=1,
+        type="buyer"
+    )
 
     data = {
         "email": "nemoymoy@yandex.ru",
