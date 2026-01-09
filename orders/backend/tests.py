@@ -186,11 +186,11 @@ def test_shop_create_success():
     data = {
         "email": "nemoymoy@yandex.ru",
         "password": "Aa12345678!",
-        "name": "Test Shop",
-        "url": "shop@example.com",
+        "name": "DNS",
+        "url": "https://dns-shop.ru",
     }
 
     response = client.post(url, data)
 
     assert response.status_code == 201
-    assert response.json().get('name') == "Test Shop"
+    assert response.json().get('name') == "DNS"
