@@ -11,7 +11,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 class ContactInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactInfo
-        fields = ('id', 'city', 'street', 'house', 'structure', 'building', 'apartment', 'user', 'phone')
+        fields = ('id', 'user', 'city', 'street', 'house_number', 'structure', 'building', 'apartment', 'phone')
         read_only_fields = ('id',)
         extra_kwargs = {
             'user': {'write_only': True}
