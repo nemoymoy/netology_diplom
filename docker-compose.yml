@@ -49,33 +49,7 @@ services:
     depends_on:
       - web
 
-  rabbitmq:
-    container_name: rabbitmq
-    restart: always
-    image: rabbitmq:3.9-alpine
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-
-  celeryworker:
-    container_name: celeryworker
-    build: ./orders
-    volumes:
-      - ./:/backend
-    command: celery -A core.celery worker --pool=prefork -l info
-    depends_on:
-      - rabbitmq
-
-  celeryscheduler:
-    container_name: celeryscheduler
-    build: ./orders
-    volumes:
-      - ./:/app
-    command: celery -A core beat -l info
-    depends_on:
-      - celeryworker
-
 volumes:
   postgres_data:
   static_volume:
   media_volume:
-  rabbitmq_data:

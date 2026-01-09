@@ -5,7 +5,6 @@ from celery import shared_task
 # from django_rest_passwordreset.models import ResetPasswordToken
 from celery import shared_task
 
-from .models import AdditionResult
 
 
 # from django.core.exceptions import ValidationError
@@ -59,11 +58,4 @@ from .models import AdditionResult
 #         thumbnail = thumbnailer.get_thumbnail({'size': (100, 100), 'crop': True})
 #         thumbnail.save()
 
-result = 1
 
-@shared_task
-def add_numbers():
-    global result
-    print("Running add numbers periodic task")
-    result += result
-    AdditionResult.objects.create(answer=result)

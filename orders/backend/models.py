@@ -318,5 +318,3 @@ class ConfirmEmailToken(models.Model):
 #     def __str__(self):
 #         return self.name
 
-class AdditionResult(models.Model):
-    answer = models.IntegerField(default=0)
