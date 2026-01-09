@@ -50,7 +50,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 class ShopSerializer(serializers.ModelSerializer):
     status = serializers.BooleanField(default=True)
-    user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+    # user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
     class Meta:
         model = Shop
