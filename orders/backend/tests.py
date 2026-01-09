@@ -9,11 +9,12 @@ from .models import ContactInfo, Order, Shop, CustomUser
 
 # Create your tests here.
 
+@pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
 def test_register_account_success():
     """Тест успешной регистрации пользователя."""
     client = APIClient()
-    url = reverse('user-register')  # Название эндпоинта в urls.py
+    url = reverse(viewname='user-register')  # Название эндпоинта в urls.py
 
     data = {
         "email": "nemoymoy@yandex.ru",
@@ -32,7 +33,7 @@ def test_register_account_success():
     assert response.status_code == 200
     assert response.json().get('Status') is True
 
-
+@pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
 def test_register_account_missing_fields():
     """Тест регистрации с отсутствующими обязательными полями."""
@@ -50,7 +51,7 @@ def test_register_account_missing_fields():
     assert response.json().get('Status') is False
     assert 'Errors' in response.json()
 
-
+@pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
 def test_register_account_weak_password():
     """Тест регистрации с простым паролем, который не проходит валидацию."""
@@ -72,7 +73,7 @@ def test_register_account_weak_password():
     assert response.json().get('Status') is False
     assert 'password' in response.json().get('Errors', {})
 
-
+@pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
 def test_login_account_success():
     """Тест успешного входа пользователя."""
@@ -92,7 +93,7 @@ def test_login_account_success():
     assert response.status_code == 200
     assert "Вы вошли в систему." in response.content.decode()
 
-
+@pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
 def test_contact_view_get_authenticated():
     """Тест получения контактов авторизованного пользователя."""
@@ -111,7 +112,7 @@ def test_contact_view_get_authenticated():
     assert len(response.json()) == 1
     assert response.json()[0]['city'] == "City"
 
-
+@pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
 def test_basket_view_get_authenticated():
     """Тест получения корзины авторизованного пользователя."""
@@ -130,7 +131,7 @@ def test_basket_view_get_authenticated():
     assert len(response.json()) == 1
     assert response.json()[0]['id'] == order.id
 
-
+@pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
 def test_shop_create_success():
     """Тест успешного создания магазина."""
