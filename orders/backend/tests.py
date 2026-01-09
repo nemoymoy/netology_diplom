@@ -141,7 +141,17 @@ def test_basket_view_get_authenticated():
     url = reverse('basket')
 
     # Создаем пользователя и корзину
-    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!")
+    user = CustomUser.objects.create_user(
+        email="nemoymoy@yandex.ru",
+        password="Aa12345678!",
+        company="Example Inc",
+        position="Manager",
+        username="django",
+        first_name="John",
+        last_name="Doe",
+        is_active=1,
+        type="buyer"
+    )
     client.force_authenticate(user=user)
 
     order = Order.objects.create(user=user, status="basket")
@@ -160,7 +170,17 @@ def test_shop_create_success():
     url = reverse('shop-create')
 
     # Создаем пользователя
-    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!", is_active=True)
+    user = CustomUser.objects.create_user(
+        email="nemoymoy@yandex.ru",
+        password="Aa12345678!",
+        company="Example Inc",
+        position="Manager",
+        username="django",
+        first_name="John",
+        last_name="Doe",
+        is_active=1,
+        type="shop"
+    )
     client.force_authenticate(user=user)
 
     data = {
