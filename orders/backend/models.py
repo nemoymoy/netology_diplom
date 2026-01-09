@@ -202,8 +202,8 @@ class ProductParameter(models.Model):
 
     class Meta:
         ordering = ['parameter']
-        verbose_name = "Параметр"
-        verbose_name_plural = "Параметры"
+        verbose_name = "Параметр продукта"
+        verbose_name_plural = "Параметры продукта"
         constraints = [models.UniqueConstraint(fields=['product_info', 'parameter'], name='unique_product_parameter')]
 
 class ContactInfo(models.Model):
@@ -234,14 +234,13 @@ class Order(models.Model):
     status = models.CharField(verbose_name='Статус', choices=STATE_CHOICES, max_length=15)
     contact = models.ForeignKey(ContactInfo, verbose_name='Контакт', related_name='contact_for_order', blank=True,
                                 null=True, on_delete=models.CASCADE)
-    ordered_items = models.PositiveIntegerField(verbose_name='Заказанные позиции', blank=True, null=True)
 
     def __str__(self):
         return f'{self.dt} {self.contact}'
 
-    @property
-    def sum(self):
-        return self.ordered_items.aggregate(total=Sum("quantity"))["total"]
+    # @property
+    # def sum(self):
+    #     return self.order_item.aggregate(total=Sum("quantity"))["total"]
 
     class Meta:
         ordering = ['-dt']

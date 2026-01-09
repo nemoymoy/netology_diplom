@@ -113,14 +113,14 @@ class OrderItemCreateSerializer(OrderItemSerializer):
     product_info = ProductInfoSerializer(read_only=True)
 
 class OrderSerializer(serializers.ModelSerializer):
-    ordered_items = OrderItemCreateSerializer(read_only=True, many=True)
+    order_item = OrderItemCreateSerializer(read_only=True, many=True)
     status = serializers.CharField(required=False, read_only=True)
     total_sum = serializers.IntegerField()
     contact = ContactInfoSerializer(read_only=True)
 
     class Meta:
         model = Order
-        fields = ('id', 'ordered_items', 'status', 'dt', 'total_sum', 'contact',)
+        fields = ('id', 'order_item', 'status', 'dt', 'total_sum', 'contact',)
         read_only_fields = ('id',)
 
 class OrderUpdSerializer(OrderSerializer):

@@ -324,9 +324,9 @@ class BasketView(APIView):
             return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=403)
         basket = Order.objects.filter(
             user_id=request.user.id, status='basket').prefetch_related(
-            'ordered_items__product_info__product__category',
-            'ordered_items__product_info__product_parameters__parameter').annotate(
-            total_sum=Sum(F('ordered_items__quantity') * F('ordered_items__product_info__price'))).distinct()
+            'order_item__product_info__product__category',
+            'order_item__product_info__product_parameter__parameter').annotate(
+            total_sum=Sum(F('order_item__quantity') * F('order_item__product_info__price'))).distinct()
         serializer = OrderSerializer(basket, many=True)
         return Response(serializer.data)
     @staticmethod
