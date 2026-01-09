@@ -72,7 +72,7 @@ services:
       - ./:/app
     command: celery -A core beat -l info
     depends_on:
-      - celery
+      - celeryworker
 
 volumes:
   postgres_data:
