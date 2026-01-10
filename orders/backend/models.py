@@ -236,11 +236,7 @@ class Order(models.Model):
                                 null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.dt} {self.contact}'
-
-    # @property
-    # def sum(self):
-    #     return self.order_item.aggregate(total=Sum("quantity"))["total"]
+        return f'{self.user} {self.dt}'
 
     class Meta:
         ordering = ['-dt']
@@ -249,11 +245,13 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     objects = models.manager.Manager()
-    order = models.ForeignKey(Order, verbose_name="Заказ", related_name='order_for_order_items', blank=True,
+    order = models.ForeignKey(Order, verbose_name="Заказ", related_name='order_for_order_item', blank=True,
                               on_delete=models.CASCADE)
     product_info = models.ForeignKey(ProductInfo, verbose_name="Информация о продукте",
                                      related_name='product_info_for_order_item',blank=True, null=True,
                                      on_delete=models.CASCADE)
+    shop = models.ForeignKey(Shop, verbose_name='Магазин', related_name='shop_for_order_item', blank=True, null=True,
+                             on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name='Количество')
 
     def __str__(self):
@@ -263,7 +261,7 @@ class OrderItem(models.Model):
         ordering = ['-order']
         verbose_name = "Позиция заказа"
         verbose_name_plural = "Позиции заказа"
-        constraints = [models.UniqueConstraint(fields=['order', 'product_info'], name='unique_order_item')]
+        constraints = [models.UniqueConstraint(fields=['order_id', 'product_info'], name='unique_order_item')]
 
 class ConfirmEmailToken(models.Model):
     objects = models.manager.Manager()
@@ -292,29 +290,3 @@ class ConfirmEmailToken(models.Model):
     def set_expiry(self, seconds):
         """Для установки срока действия для этого токена."""
         self.expires = self.created_at + timedelta(seconds=seconds)
-
-# class UserProfile(models.Model):
-#     user = models.ForeignKey(CustomUser, verbose_name="Пользователь", related_name='user_for_user_profile',
-#                              blank=True, on_delete=models.CASCADE)
-#     avatar = ThumbnailerImageField(upload_to='avatars/', blank=True, null=True)
-#
-#     def save(self, *args, **kwargs):
-#         super(UserProfile, self).save(*args, **kwargs)
-#         if self.avatar:
-#             create_thumbnail_for_user_avatar.delay(self.user.id, UserProfile)
-#
-#     def __str__(self):
-#         return self.user.username
-#
-# class ProductProfile(models.Model):
-#     name = models.CharField(max_length=100)
-#     image = ThumbnailerImageField(upload_to='products/', blank=True, null=True)
-#
-#     def save(self, *args, **kwargs):
-#         super(ProductProfile, self).save(*args, **kwargs)
-#         if self.image:
-#             create_thumbnail_for_product.delay(self.id, ProductProfile)
-#
-#     def __str__(self):
-#         return self.name
-

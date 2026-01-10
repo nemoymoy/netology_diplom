@@ -1,61 +1,61 @@
 from celery import shared_task
-# from easy_thumbnails.files import get_thumbnailer
+import requests
+from yaml import load as load_yaml, Loader
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+# from orders.celery import celery_app
 
-# from django.core.mail import send_mail
-# from django_rest_passwordreset.models import ResetPasswordToken
-from celery import shared_task
+from .models import Shop, Category, Product, Parameter, ProductParameter, ProductInfo
 
+# @celery_app.task()
+@shared_task
+def send_email(title, message, email, *args, **kwargs):
+    email_list = list()
+    email_list.append(email)
+    try:
+        msg = EmailMultiAlternatives(subject=title, body=message, from_email=settings.EMAIL_HOST_USER, to=email_list)
+        msg.send()
+        return f'{title}: {msg.subject}, Message:{msg.body}'
+    except Exception as e:
+        raise e
 
-
-# from django.core.exceptions import ValidationError
-# from django.contrib.auth.password_validation import validate_password, get_password_validators
-# from django.conf import settings
-# from .signals import pre_password_reset, post_password_reset
-
-
-# @shared_task
-# def send_reset_password_email(token_id):
-#     try:
-#         token = ResetPasswordToken.objects.get(id=token_id)
-#         subject = "Восстановление пароля"
-#         message = f"Для восстановления пароля перейдите по ссылке: {token.reset_url}"
-#         send_mail(subject, message, 'noreply@example.com', [token.email])
-#     except ResetPasswordToken.DoesNotExist:
-#         print("Токен не найден")
-
-# @shared_task
-# def reset_password_task(password, token):
-#     reset_password_token = ResetPasswordToken.objects.filter(key=token).first()
-#     if reset_password_token and reset_password_token.user.eligible_for_reset():
-#         pre_password_reset.send(sender=reset_password_task, user=reset_password_token.user,
-#                                 reset_password_token=reset_password_token)
-#         try:
-#             validate_password(password, user=reset_password_token.user,
-#                               password_validators=get_password_validators(settings.AUTH_PASSWORD_VALIDATORS))
-#         except ValidationError as e:
-#             raise ValidationError({'password': e.messages})
-#
-#         reset_password_token.user.set_password(password)
-#         reset_password_token.user.save()
-#         post_password_reset.send(sender=reset_password_task, user=reset_password_token.user,
-#                                  reset_password_token=reset_password_token)
-#         ResetPasswordToken.objects.filter(user=reset_password_token.user).delete()
-#     return {'status': 'OK'}
-
-# @shared_task
-# def create_thumbnail_for_product(product_id, model):
-#     product = model.objects.get(id=product_id)
-#     if product.image:
-#         thumbnailer = get_thumbnailer(product.image)
-#         thumbnail = thumbnailer.get_thumbnail({'size': (100, 100), 'crop': True})
-#         thumbnail.save()
-#
-# @shared_task
-# def create_thumbnail_for_user_avatar(user_id, model):
-#     user_profile = model.objects.get(user_id=user_id)
-#     if user_profile.avatar:
-#         thumbnailer = get_thumbnailer(user_profile.avatar)
-#         thumbnail = thumbnailer.get_thumbnail({'size': (100, 100), 'crop': True})
-#         thumbnail.save()
-
-
+# @celery_app.task()
+@shared_task
+def get_import(partner, url):
+    if url:
+        validate_url = URLValidator()
+        try:
+            validate_url(url)
+        except ValidationError as e:
+            return {'Status': False, 'Error': str(e)}
+        else:
+            stream = requests.get(url).content
+        data = load_yaml(stream, Loader=Loader)
+        try:
+            shop, _ = Shop.objects.get_or_create(name=data['shop'], user_id=partner)
+        except IntegrityError as e:
+            return {'Status': False, 'Error': str(e)}
+        for category in data['categories']:
+            category_object, _ = Category.objects.get_or_create(id=category['id'], name=category['name'])
+            category_object.shops.add(shop.id)
+            category_object.save()
+        ProductInfo.objects.filter(shop_id=shop.id).delete()
+        for item in data['goods']:
+            product, _ = Product.objects.get_or_create(name=item['name'], category_id=item['category'])
+            product_info = ProductInfo.objects.create(
+                product_id=product.id, external_id=item['id'],
+                model=item['model'], price=item['price'],
+                price_rrc=item['price_rrc'], quantity=item['quantity'],
+                shop_id=shop.id
+            )
+            for name, value in item['parameters'].items():
+                parameter_object, _ = Parameter.objects.get_or_create(name=name)
+                ProductParameter.objects.create(
+                    product_info_id=product_info.id,
+                    parameter_id=parameter_object.id, value=value
+                )
+        return {'Status': True}
+    return {'Status': False, 'Errors': 'Url-адрес является ложным'}

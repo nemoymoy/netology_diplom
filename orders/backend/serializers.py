@@ -90,46 +90,24 @@ class ProductInfoSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    product_info = serializers.PrimaryKeyRelatedField(queryset=ProductInfo.objects.all())
-    quantity = serializers.IntegerField(min_value=1, max_value=1000, default=1)
-
     class Meta:
         model = OrderItem
         fields = ('id', 'product_info', 'quantity', 'order',)
-        read_only_fields = ('id',)
-        extra_kwargs = {'order': {'write_only': True}}
-
-class OrderItemUpdSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=OrderItem.objects.all())
-    quantity = serializers.IntegerField(min_value=1, max_value=1000, default=1)
-
-    class Meta:
-        model = OrderItem
-        fields = ('id', 'product_info', 'quantity', 'order',)
-        read_only_fields = ('id',)
-        extra_kwargs = {'order': {'write_only': True}}
+        read_only_fields = ('id', )
+        extra_kwargs = {
+            'order': {'write_only': True}
+        }
 
 class OrderItemCreateSerializer(OrderItemSerializer):
     product_info = ProductInfoSerializer(read_only=True)
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_item = OrderItemCreateSerializer(read_only=True, many=True)
-    status = serializers.CharField(required=False, read_only=True)
+    ordered_items = OrderItemCreateSerializer(read_only=True, many=True)
+
     total_sum = serializers.IntegerField()
     contact = ContactInfoSerializer(read_only=True)
 
     class Meta:
         model = Order
-        fields = ('id', 'order_item', 'status', 'dt', 'total_sum', 'contact',)
+        fields = ('id', 'ordered_items', 'status', 'total_sum', 'contact',)
         read_only_fields = ('id',)
-
-class OrderUpdSerializer(OrderSerializer):
-    contact = serializers.IntegerField()
-
-class OrderDelSerializer(serializers.ModelSerializer):
-    ordered_items = serializers.ListField(child=serializers.IntegerField(min_value=0, max_value=1000))
-
-    class Meta:
-        model = Order
-        fields = ('id', 'ordered_items')
-        read_only_fields = ('id', 'ordered_items')

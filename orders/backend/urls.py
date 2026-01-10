@@ -4,7 +4,7 @@ from django_rest_passwordreset.views import reset_password_request_token, reset_
 
 from .views import (PartnerUpdate, RegisterAccount, LoginAccount, CategoryView, ShopView, ProductInfoView, BasketView,
                     AccountDetails, ContactView, OrderView, PartnerStatus, PartnerOrders, ConfirmAccount, ConfirmEmail,
-                    DeleteAccount, ShopCreate, ShopStatus, )
+                    DeleteAccount, ShopCreate, ShopStatus, PartnerUpdateTask, )
 
 app_name = 'backend'
 
@@ -30,6 +30,7 @@ urlpatterns = [
     path('basket', BasketView.as_view(), name='basket'), # Для управления корзиной покупок пользователя
 
     path('partner/update', PartnerUpdate.as_view(), name='partner-update'), # Для обновления прайса поставщика
+    path('partner/update_task', PartnerUpdateTask.as_view(), name='partner-update-task'), # Для обновления прайса поставщика
     path('partner/status', PartnerStatus.as_view(), name='partner-status'), # Для обновления статуса поставщика
     path('partner/orders', PartnerOrders.as_view(), name='partner-orders'), # Для получения заказов поставщиками
 ]
