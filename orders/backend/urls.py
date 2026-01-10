@@ -1,15 +1,18 @@
 from django.urls import path
-
 from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
+from rest_framework.routers import DefaultRouter
 
 from .views import (PartnerUpdate, RegisterAccount, LoginAccount, CategoryView, ShopView, ProductInfoView, BasketView,
                     AccountDetails, ContactView, OrderView, PartnerStatus, PartnerOrders, ConfirmAccount, ConfirmEmail,
-                    DeleteAccount, ShopCreate, ShopStatus, PartnerUpdateTask, )
+                    DeleteAccount, ShopCreate, ShopStatus, PartnerUpdateTask, RegisterAccountTask, )
+
+r = DefaultRouter()
 
 app_name = 'backend'
-
-urlpatterns = [
+urlpatterns = r.urls
+urlpatterns += [
     path('user/register', RegisterAccount.as_view(), name='user-register'), # Регистрация методом POST
+    path('user/register_task', RegisterAccountTask.as_view(), name='user-register-task'), # Регистрация методом POST с подтверждением через email
     path('user/register/confirm', ConfirmAccount.as_view(), name='user-register-confirm'), # Подтверждение Пользователя методом POST
     path('user/confirm-email/', ConfirmEmail.as_view(), name='confirm-email'),  # Подтверждения E-mail методом GET
     path('user/login', LoginAccount.as_view(), name='user-login'), # Для авторизации пользователей

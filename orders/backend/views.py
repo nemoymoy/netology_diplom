@@ -48,6 +48,31 @@ class RegisterAccount(APIView):
                     user = user_serializer.save()
                     user.set_password(request.data['password'])
                     user.save()
+                    return JsonResponse({'Status': True}, status=status.HTTP_201_CREATED)
+                else:
+                    return JsonResponse({'Status': False, 'Errors': user_serializer.errors},
+                                        status=status.HTTP_403_FORBIDDEN)
+        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+class RegisterAccountTask(APIView):
+    @staticmethod
+    def post(request, *args, **kwargs):
+        if {'username', 'first_name', 'last_name', 'email', 'password', 'company', 'position'}.issubset(request.data):
+            try:
+                validate_password(request.data['password'])
+            except Exception as password_error:
+                error_array = []
+                for item in password_error:
+                    error_array.append(item)
+                return JsonResponse({'Status': False, 'Errors': {'password': error_array}},
+                                    status=status.HTTP_403_FORBIDDEN)
+            else:
+                user_serializer = UserSerializer(data=request.data)
+                if user_serializer.is_valid():
+                    user = user_serializer.save()
+                    user.set_password(request.data['password'])
+                    user.save()
                     token, _ = ConfirmEmailToken.objects.get_or_create(user_id=user.id)
                     send_email.delay('Подтверждение регистрации', f'Ваш токен подтверждения {token.key}', user.email)
                     return JsonResponse({'Status': True, 'Токен для подтверждения по электронной почте': token.key},
