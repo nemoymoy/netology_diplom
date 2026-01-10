@@ -13,6 +13,7 @@ from django.db import IntegrityError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.validators import URLValidator
 from django.contrib.auth import authenticate
+from django.views.generic import TemplateView
 
 from rest_framework.views import APIView
 from rest_framework.request import Request
@@ -29,6 +30,9 @@ from .serializers import (UserSerializer, CategorySerializer, ShopSerializer, Co
 from .tasks import send_email, get_import
 
 # Create your views here.
+
+class HomeView(TemplateView):
+    template_name = 'home.html'
 
 class RegisterAccount(APIView):
     @staticmethod

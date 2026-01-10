@@ -1,13 +1,3 @@
-# Celery settings
-
-CELERY_BROKER_URL = 'amqp://guest:guest@localhost'
-
-#: Only add pickle to this list if your broker is secured
-#: from unwanted access (see userguide/security.html)
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_RESULT_BACKEND = 'db+sqlite:///results.sqlite'
-CELERY_TASK_SERIALIZER = 'json'
-
 """
 Django settings for orders project.
 
@@ -20,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
+from os import path
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key  # Импортирована функция случайного секретного ключа
 
@@ -57,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     'drf_spectacular',
 
@@ -68,6 +60,16 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'filer',
     'mptt',
+
+    'debug_toolbar',
+
+    'baton',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.vk',
+    'baton.autodiscover',
 ]
 
 MIDDLEWARE = [
@@ -78,6 +80,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'orders.urls'
@@ -85,7 +91,7 @@ ROOT_URLCONF = 'orders.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"], # используем каталог шаблонов на уровне проекта
+        'DIRS': [path.join(BASE_DIR, 'backend', 'templates', 'backend')], # используем каталог шаблонов на уровне проекта
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -97,6 +103,9 @@ TEMPLATES = [
         },
     },
 ]
+
+# Django Debug Toolbar
+INTERNAL_IPS = ["127.0.0.1", "localhost" , "[::1]", "0.0.0.0"]
 
 WSGI_APPLICATION = 'orders.wsgi.application'
 
@@ -135,6 +144,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'backend.CustomUser' # новая модель пользователя вместо встроенной модели User
 
 # Internationalization
@@ -163,18 +173,9 @@ STATIC_ROOT = BASE_DIR / "static"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-LOGIN_REDIRECT_URL = '/api/v1/user/login/'
-LOGOUT_REDIRECT_URL = '/api/v1/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_HOST_USER = 'netologydiplomparamzin@yandex.ru'
-EMAIL_HOST_PASSWORD = 'bpgdhslzqubiggeq'
-EMAIL_PORT = '465'
-EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SERVER_EMAIL = EMAIL_HOST_USER
-EMAIL_ADMIN = EMAIL_HOST_USER
+
+
 
 # Для TokenAuthentication
 REST_FRAMEWORK = {
@@ -200,19 +201,58 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '300/minute',  # Для неаутентифицированных пользователей
         'user': '500/minute',  # Для аутентифицированных пользователей
-    }
+    },
+
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 AUTHENTICATION_BACKENDS = (
     # 'social_core.backends.google.GoogleOAuth2',  # Для Google
     # 'social_core.backends.facebook.FacebookOAuth2',  # Для Facebook (если нужно)
     'django.contrib.auth.backends.ModelBackend',  # Стандартная авторизация
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '<YOUR_GOOGLE_CLIENT_ID>'
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '<YOUR_GOOGLE_CLIENT_SECRET>'
-#
-# # Facebook
-# SOCIAL_AUTH_FACEBOOK_KEY = '<YOUR_FACEBOOK_APP_ID>'
-# SOCIAL_AUTH_FACEBOOK_SECRET = '<YOUR_FACEBOOK_APP_SECRET>'
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://localhost:6379',
+    }
+}
 
+#Client email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+SITE_ID = 1
+EMAIL_HOST = os.getenv("EMAIL_HOST",)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER",)
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD",)
+EMAIL_PORT = os.getenv("EMAIL_PORT",)
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
+EMAIL_ADMIN = EMAIL_HOST_USER
+
+SOCIALACCOUNT_FORMS = {'signup': 'backend.forms.MyCustomSignupForm'}
+
+#Redis and celery settings
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_TRANSPORT_OPTION = {'visibility_timeout': 3600}
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Moscow'
+
+#Email verification settings
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_LOGOUT_REDIRECT_URL ='/accounts/login/'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = '/api/v1/'
+# ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*',]
+# ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_AUTHENTICATION_METHOD = {'email'}
+ACCOUNT_LOGIN_METHODS = {'email'}
+# ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 60
+ACCOUNT_RATE_LIMITS = False

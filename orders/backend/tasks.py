@@ -6,11 +6,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-# from orders.celery import celery_app
 
 from .models import Shop, Category, Product, Parameter, ProductParameter, ProductInfo
 
-# @celery_app.task()
 @shared_task
 def send_email(title, message, email, *args, **kwargs):
     email_list = list()
@@ -22,7 +20,6 @@ def send_email(title, message, email, *args, **kwargs):
     except Exception as e:
         raise e
 
-# @celery_app.task()
 @shared_task
 def get_import(partner, url):
     if url:

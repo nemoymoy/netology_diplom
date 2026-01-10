@@ -1,4 +1,3 @@
-# Верстальщик
 from rest_framework import serializers
 
 from .models import CustomUser, Category, Shop, Product, ProductInfo, ProductParameter, ContactInfo, Order, OrderItem

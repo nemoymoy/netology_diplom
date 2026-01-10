@@ -4,13 +4,14 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (PartnerUpdate, RegisterAccount, LoginAccount, CategoryView, ShopView, ProductInfoView, BasketView,
                     AccountDetails, ContactView, OrderView, PartnerStatus, PartnerOrders, ConfirmAccount, ConfirmEmail,
-                    DeleteAccount, ShopCreate, ShopStatus, PartnerUpdateTask, RegisterAccountTask, )
-
-r = DefaultRouter()
+                    DeleteAccount, ShopCreate, ShopStatus, PartnerUpdateTask, RegisterAccountTask, HomeView, )
 
 app_name = 'backend'
+r = DefaultRouter()
 urlpatterns = r.urls
 urlpatterns += [
+    path('', HomeView.as_view(), name='home'),
+
     path('user/register', RegisterAccount.as_view(), name='user-register'), # Регистрация методом POST
     path('user/register_task', RegisterAccountTask.as_view(), name='user-register-task'), # Регистрация методом POST с подтверждением через email
     path('user/register/confirm', ConfirmAccount.as_view(), name='user-register-confirm'), # Подтверждение Пользователя методом POST

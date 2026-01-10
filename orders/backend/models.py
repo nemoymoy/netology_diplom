@@ -1,20 +1,13 @@
 
-# from easy_thumbnails.fields import ThumbnailerImageField
-# from .tasks import create_thumbnail_for_product, create_thumbnail_for_user_avatar
-
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.hashers import make_password
 from django.db import models
-from django.db.models import Sum
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.tokens import get_token_generator
 from django.utils import timezone
 from django.core.mail import send_mail
 from datetime import timedelta
-
-# from django.contrib.auth.validators import ASCIIUsernameValidator
-# import six
 
 USER_TYPE_CHOICES = (('shop', 'Магазин'), ('buyer', 'Покупатель'))
 
@@ -61,10 +54,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name='Email', max_length=255, unique=True)
     company = models.CharField(verbose_name='Компания', max_length=40, blank=True)
     position = models.CharField(verbose_name='Должность', max_length=40, blank=True)
-
-    # username_validator = UnicodeUsernameValidator() if six.PY3 else ASCIIUsernameValidator()
     username_validator = UnicodeUsernameValidator()
-
     username = models.CharField(verbose_name='Псевдоним', max_length=150, unique=True,
                                 help_text=_('Требования. Не более 150 символов. Только буквы, цифры и @/./+/-/_.'),
                                 validators=[username_validator],

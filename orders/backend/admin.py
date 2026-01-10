@@ -1,6 +1,4 @@
 from django.contrib import admin
-
-from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
@@ -33,7 +31,7 @@ class CustomUserAdmin(UserAdmin):
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
-    list_display = ['email', 'username', 'type', 'first_name', 'last_name', 'company', 'position', "is_staff", "is_active", 'is_superuser']
+    list_display = ['id', 'email', 'username', 'type', 'first_name', 'last_name', 'company', 'position', "is_staff", "is_active", 'is_superuser']
     ordering = ('email',)
     list_filter = ('is_active', 'is_staff', 'is_superuser')
 
@@ -48,61 +46,87 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
-    list_display = ('name', 'url', 'status')
+    model = Shop
+    fieldsets = (
+        (None, {'fields': ('name', 'status')}),
+        ('Additional Info', {'fields': ('url', 'user')}),
+    )
+    list_display = ('id', 'name', 'url', 'status')
     search_fields = ['name']
     list_filter = ('status',)
+    list_editable = ('status',)
 
+class ProductInline(admin.TabularInline):
+    model = Product
+    extra = 1
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    model = Category
+    inlines = [ProductInline]
+    list_display = ('id', 'name',)
     search_fields = ['name']
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category')
-    search_fields = ['name']
+    list_display = ('id', 'name', 'category')
+    search_fields = ('name','category')
 
+class ProductParameterInline(admin.TabularInline):
+    model = ProductParameter
+    extra = 1
 
 @admin.register(ProductInfo)
 class ProductInfoAdmin(admin.ModelAdmin):
-    list_display = ('model', 'external_id', 'product', 'shop', 'quantity', 'price', 'price_rrc')
+    model = ProductInfo
+    fieldsets = (
+        (None, {'fields': ('product', 'model', 'external_id', 'quantity', 'shop')}),
+        ('Цены', {'fields': ('price', 'price_rrc')}),
+    )
+    list_display = ('id', 'product', 'model', 'external_id', 'price', 'price_rrc', 'quantity', 'shop')
     search_fields = ['product__name']
     list_filter = ('model', 'product',)
+    inlines = [ProductParameterInline]
 
 
 @admin.register(Parameter)
 class ParameterAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id', 'name',)
     search_fields = ['name']
 
 
 @admin.register(ProductParameter)
 class ProductParameterAdmin(admin.ModelAdmin):
-    list_display = ('product_info', 'parameter', 'value')
+    list_display = ('id', 'product_info', 'parameter', 'value')
 
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 1
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('user', 'dt', 'status', 'contact')
+    model = Order
+    fields = ('user', 'status', 'contact', 'dt')
+    list_display = ('id', 'user', 'dt', 'status', 'contact')
     search_fields = ['user__email']
     list_filter = ('status',)
+    inlines = [OrderItemInline, ]
 
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ('order', 'product_info', 'quantity')
+    list_display = ('id', 'order', 'product_info', 'quantity')
 
 
 @admin.register(ContactInfo)
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('user', 'city', 'street', 'house_number', 'structure', 'building', 'apartment', 'phone')
-    search_fields = ['city', 'street']
+    list_display = ('id', 'user', 'city', 'street', 'house_number', 'structure', 'building', 'apartment', 'phone')
+    search_fields = ['city', 'phone']
 
 
 @admin.register(ConfirmEmailToken)
 class ConfirmEmailTokenAdmin(admin.ModelAdmin):
-    list_display = ('user', 'key', 'created_at',)
+    list_display = ('id', 'user', 'key', 'created_at',)
     search_fields = ['user__email']
-    list_filter = ('user',)
+    list_filter = ('created_at',)
