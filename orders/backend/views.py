@@ -498,7 +498,7 @@ class PartnerStatus(APIView):
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-        shop = Shop.objects.get(id=request.user.id)
+        shop = Shop.objects.get(user=request.user.id)
         serializer = ShopSerializer(shop)
         return Response(serializer.data)
     @staticmethod
