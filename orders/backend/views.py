@@ -1,5 +1,6 @@
 import json
 
+import requests
 from ujson import loads as load_json
 from yaml import load as load_yaml, Loader
 from requests import get
@@ -445,7 +446,7 @@ class PartnerUpdate(APIView):
             except ValidationError as e:
                 return JsonResponse({'Status': False, 'Error': str(e)})
             else:
-                stream = get(url).content
+                stream = requests.get(url).content
                 print(stream)
                 data = load_yaml(stream, Loader=Loader)
                 shop, _ = Shop.objects.get_or_create(name=data['shop'], user_id=request.user.id)
