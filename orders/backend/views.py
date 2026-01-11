@@ -437,6 +437,7 @@ class PartnerUpdate(APIView):
         if request.user.type != 'shop':
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
         url = request.data.get('url')
+        print(url)
         if url:
             validate_url = URLValidator()
             try:
@@ -445,6 +446,7 @@ class PartnerUpdate(APIView):
                 return JsonResponse({'Status': False, 'Error': str(e)})
             else:
                 stream = get(url).content
+                print(stream)
                 data = load_yaml(stream, Loader=Loader)
                 shop, _ = Shop.objects.get_or_create(name=data['shop'], user_id=request.user.id)
                 for category in data['categories']:
