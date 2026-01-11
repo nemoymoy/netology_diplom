@@ -12,6 +12,8 @@ from .models import Shop, Category, Product, Parameter, ProductParameter, Produc
 
 @shared_task
 def send_email(token, email):
+    list_to = list()
+    list_to.append(email)
     print(token, email)
     confirmation_link = f"http://127.0.0.1:1337/api/v1/user/confirm-email/?token={quote(token)}&email={quote(email)}"
     try:
