@@ -446,9 +446,9 @@ class PartnerUpdate(APIView):
             except ValidationError as e:
                 return JsonResponse({'Status': False, 'Error': str(e)})
             else:
-                stream = requests.get(url).content
-                print(stream)
-                data = load_yaml(stream, Loader=Loader)
+                stream = requests.get(url)
+                print(stream.content)
+                data = load_yaml(stream.content, Loader=Loader)
                 shop, _ = Shop.objects.get_or_create(name=data['shop'], user_id=request.user.id)
                 for category in data['categories']:
                     category_object, _ = Category.objects.get_or_create(id=category['id'], name=category['name'])
