@@ -30,7 +30,7 @@ def test_register_account_success():
 
     response = client.post(url, data)
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json().get('Status') is True
 
 @pytest.mark.urls('backend.urls')
@@ -47,7 +47,7 @@ def test_register_account_missing_fields():
 
     response = client.post(url, data)
 
-    assert response.status_code == 200
+    assert response.status_code == 400
     assert response.json().get('Status') is False
     assert 'Errors' in response.json()
 
@@ -72,7 +72,7 @@ def test_register_account_weak_password():
 
     response = client.post(url, data)
 
-    assert response.status_code == 200
+    assert response.status_code == 403
     assert response.json().get('Status') is False
     assert 'password' in response.json().get('Errors', {})
 
