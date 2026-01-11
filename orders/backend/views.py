@@ -3,7 +3,7 @@ import json
 import requests
 from ujson import loads as load_json
 from yaml import load as load_yaml, Loader
-from requests import get
+from urllib.parse import quote
 from distutils.util import strtobool
 from ast import literal_eval
 
@@ -79,7 +79,11 @@ class RegisterAccountTask(APIView):
                     user.set_password(request.data['password'])
                     user.save()
                     token, _ = ConfirmEmailToken.objects.get_or_create(user_id=user.id)
-                    send_email.delay(token.key, user.email)
+                    confirmation_link = (f"http://127.0.0.1:1337/api/v1/user/confirm-email/?token={quote(token.key)}"
+                                         f"&email={quote(user.email)}")
+                    subject = 'Пожалуйста, подтвердите свой адрес электронной почты'
+                    message = f'Чтобы подтвердить свой адрес электронной почты, перейдите по этой ссылке: {confirmation_link}'
+                    send_email.delay(subject, message, user.email)
                     return JsonResponse({'Status': True, 'Токен для подтверждения по электронной почте': token.key},
                                         status=status.HTTP_201_CREATED)
                 else:
@@ -158,13 +162,13 @@ class AccountDetails(APIView):
     @staticmethod
     def get(request: Request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=status.HTTP_403_FORBIDDEN)
+            return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
     @staticmethod
     def post(request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=status.HTTP_403_FORBIDDEN)
+            return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
         if {'password'}.issubset(request.data):
             if 'password' in request.data:
                 try:
@@ -338,7 +342,6 @@ class OrderView(APIView):
         return Response(serializer.data)
     @staticmethod
     def post(request, *args, **kwargs):
-
         if {'id', 'contact'}.issubset(request.data):
             if request.data['id'].isdigit():
                 try:
@@ -351,7 +354,9 @@ class OrderView(APIView):
                                         status=status.HTTP_400_BAD_REQUEST)
                 else:
                     if is_updated:
-                        send_email.delay('Обновление статуса заказа', 'Заказ сформирован', request.user.email)
+                        subject = 'Обновление статуса заказа'
+                        message = 'Заказ сформирован'
+                        send_email.delay(subject, message, request.user.email)
                         return JsonResponse({'Status': True}, status=status.HTTP_200_OK)
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'},
                             status=status.HTTP_400_BAD_REQUEST)

@@ -1,21 +1,18 @@
-from django.test import TestCase
-
-
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
-# from django.contrib.auth.models import User
-from .models import ContactInfo, Order, Shop, CustomUser
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED,
+                                   HTTP_403_FORBIDDEN)
+from .models import ContactInfo, Order, CustomUser
 
 # Create your tests here.
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
-def test_register_account_success():
+def test_register_account_success(api_client):
     """Тест успешной регистрации пользователя."""
-    client = APIClient()
+    # client = APIClient()
     url = reverse(viewname='user-register')  # Название эндпоинта в urls.py
-
     data = {
         "email": "nemoymoy@yandex.ru",
         "password": "Aa12345678!",
@@ -27,37 +24,32 @@ def test_register_account_success():
         "is_active": True,
         "type": "buyer",
     }
-
-    response = client.post(url, data)
-
-    assert response.status_code == 201
+    response = api_client.post(url, data, format='json')
+    assert response.status_code == HTTP_201_CREATED
+    assert response.status_code == HTTP_201_CREATED
     assert response.json().get('Status') is True
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
-def test_register_account_missing_fields():
+def test_register_account_missing_fields(api_client):
     """Тест регистрации с отсутствующими обязательными полями."""
-    client = APIClient()
+    # client = APIClient()
     url = reverse('user-register')
-
     data = {
         "first_name": "John",
         "email": "nemoymoy@yandex.ru"
     }
-
-    response = client.post(url, data)
-
-    assert response.status_code == 400
+    response = api_client.post(url, data, format='json')
+    assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.json().get('Status') is False
     assert 'Errors' in response.json()
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
-def test_register_account_weak_password():
+def test_register_account_weak_password(api_client):
     """Тест регистрации с простым паролем, который не проходит валидацию."""
-    client = APIClient()
+    # client = APIClient()
     url = reverse('user-register')
-
     data = {
         "email": "nemoymoy@yandex.ru",
         "password": "123",
@@ -69,22 +61,34 @@ def test_register_account_weak_password():
         "is_active": True,
         "type": "buyer",
     }
-
-    response = client.post(url, data)
-
-    assert response.status_code == 403
+    response = api_client.post(url, data, format='json')
+    assert response.status_code == HTTP_403_FORBIDDEN
     assert response.json().get('Status') is False
     assert 'password' in response.json().get('Errors', {})
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
-def test_login_account_success():
-    """Тест успешного входа пользователя."""
-    client = APIClient()
-    url = reverse('user-login')
+def test_user_confirm(api_client, user_factory, confirm_email_token_factory):
+    """Тест подтверждения регистрации пользователя по email."""
+    user = user_factory()
+    token = confirm_email_token_factory()
+    user.confirm_email_tokens.add(token)
+    url = reverse("backend:user-register-confirm")
+    response = api_client.post(url, data={"email": user.email, "token": "wrong_key"})
+    assert response.status_code == HTTP_401_UNAUTHORIZED
+    assert response.json().get('Status') is False
 
+    response = api_client.post(url, data={"email": user.email, "token": token.key})
+    assert response.status_code == HTTP_200_OK
+    assert response.json().get('Status') is True
+
+@pytest.mark.urls('backend.urls')
+@pytest.mark.django_db
+def test_login_account_success(api_client):
+    """Тест успешного входа пользователя."""
+    # client = APIClient()
     # Создаем пользователя
-    _user = CustomUser.objects.create_user(
+    some_user = CustomUser.objects.create_user(
         email="nemoymoy@yandex.ru",
         password="Aa12345678!",
         company="Example Inc",
@@ -95,28 +99,56 @@ def test_login_account_success():
         is_active=1,
         type="buyer"
     )
+    url = reverse("user-register")
+    response = api_client.post(url, data=some_user, format='json')
+    assert response.status_code == HTTP_200_OK
+    assert response.json().get('Status') is True
 
+    url = reverse('user-login')
     data = {
         "email": "nemoymoy@yandex.ru",
         "password": "Aa12345678!"
     }
-
-    response = client.post(url, data)
-
-    assert response.status_code == 200
-    assert '"Status": true' in response.content.decode()
+    response = api_client.post(url, data, format='json')
+    assert response.status_code == HTTP_200_OK
+    assert response.json().get('Status') is True
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
-def test_contact_view_get_authenticated():
+def test_user_details(api_client, user_factory):
+    """Тест запроса деталей аккаунта пользователя."""
+    url = reverse("user-details")
+    user = user_factory()
+    api_client.force_authenticate(user=user)
+    response = api_client.get(url)
+    assert response.status_code == HTTP_200_OK
+
+    """Тест записи деталей аккаунта пользователя."""
+    data = {
+        "email": "nemoymoy@yandex.ru",
+        "password": "123qwerty!",
+        "company": "Example Inc",
+        "position": "Manager",
+        "username": "django",
+        "first_name": "John",
+        "last_name": "Doe",
+        "is_active": True,
+        "type": "buyer",
+    }
+    api_client.force_authenticate(email="nemoymoy@yandex.ru", password="123qwerty!")
+    response = api_client.post(url, data, format='json')
+    assert response.status_code == HTTP_200_OK
+
+@pytest.mark.urls('backend.urls')
+@pytest.mark.django_db
+def test_contact_view_get_authenticated(api_client, user_factory):
     """Тест получения контактов авторизованного пользователя."""
-    client = APIClient()
+    # client = APIClient()
     url = reverse('user-contact')
-
     # Создаем пользователя и контакт
-    user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!")
-    client.force_authenticate(user=user)
-
+    # user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!")
+    user = user_factory()
+    api_client.force_authenticate(user=user)
     ContactInfo.objects.create(
         user=user,
         city="City",
@@ -126,12 +158,67 @@ def test_contact_view_get_authenticated():
         building="Building",
         apartment="Apartment",
         phone="1234567890")
-
-    response = client.get(url)
-
-    assert response.status_code == 200
+    response = api_client.get(url)
+    assert response.status_code == HTTP_200_OK
     assert len(response.json()) == 1
     assert response.json()[0]['city'] == "City"
+
+@pytest.mark.urls('backend.urls')
+@pytest.mark.django_db
+def test_shop_create_success(api_client):
+    """Тест успешного создания магазина."""
+    # client = APIClient()
+    url = reverse('shop-create')
+    # Создаем пользователя
+    user = CustomUser.objects.create_user(
+        email="nemoymoy@yandex.ru",
+        password="Aa12345678!",
+        company="Example Inc",
+        position="Manager",
+        username="django",
+        first_name="John",
+        last_name="Doe",
+        is_active=1,
+        type="shop"
+    )
+    api_client.force_authenticate(user=user)
+    data = {
+        "email": "nemoymoy@yandex.ru",
+        "password": "Aa12345678!",
+        "name": "DNS",
+        "url": "https://dns-shop.ru",
+    }
+    response = api_client.post(url, data, format='json')
+    assert response.status_code == HTTP_201_CREATED
+    assert response.json().get('name') == "DNS"
+
+@pytest.mark.urls('backend.urls')
+@pytest.mark.django_db
+def test_products(api_client, user_factory, shop_factory, order_factory,
+                product_info_factory, product_factory, category_factory):
+    """Тест получения информации о магазине и продукции."""
+    url = reverse("shops")
+    shop = shop_factory()
+    customer = user_factory()
+    api_client.force_authenticate(user=customer)
+    category = category_factory()
+    product = product_factory(category=category)
+    product_info = product_info_factory(product=product, shop=shop)
+    # shop_id = shop.id
+    # category_id = category.id
+    response = api_client.get(url, shop_id=shop.id, category_id=category.id)
+    assert response.status_code == HTTP_200_OK
+    assert response.json().get('results')[0]['id'] == 1
+
+@pytest.mark.urls('backend.urls')
+@pytest.mark.django_db
+def test_category_get(api_client, category_factory):
+    """Тест получения информации о категориях товаров."""
+    url = reverse('categories')
+    category_factory(_quantity=4)
+    response = api_client.get(url)
+    assert response.status_code == HTTP_200_OK
+    assert len(response.data) == 4
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
@@ -158,39 +245,6 @@ def test_basket_view_get_authenticated():
 
     response = client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_200_OK
     assert len(response.json()) == 1
     assert response.json()[0]['id'] == order.id
-
-@pytest.mark.urls('backend.urls')
-@pytest.mark.django_db
-def test_shop_create_success():
-    """Тест успешного создания магазина."""
-    client = APIClient()
-    url = reverse('shop-create')
-
-    # Создаем пользователя
-    user = CustomUser.objects.create_user(
-        email="nemoymoy@yandex.ru",
-        password="Aa12345678!",
-        company="Example Inc",
-        position="Manager",
-        username="django",
-        first_name="John",
-        last_name="Doe",
-        is_active=1,
-        type="shop"
-    )
-    client.force_authenticate(user=user)
-
-    data = {
-        "email": "nemoymoy@yandex.ru",
-        "password": "Aa12345678!",
-        "name": "DNS",
-        "url": "https://dns-shop.ru",
-    }
-
-    response = client.post(url, data)
-
-    assert response.status_code == 201
-    assert response.json().get('name') == "DNS"
