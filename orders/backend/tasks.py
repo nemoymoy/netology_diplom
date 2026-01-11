@@ -2,21 +2,23 @@ from celery import shared_task
 import requests
 from yaml import load as load_yaml, Loader
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, send_mail
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from urllib.parse import quote
 
 from .models import Shop, Category, Product, Parameter, ProductParameter, ProductInfo
 
 @shared_task
-def send_email(title, message, email, *args, **kwargs):
-    email_list = list()
-    email_list.append(email)
+def send_email(token, email):
+    print(token, email)
+    confirmation_link = f"http://127.0.0.1:1337/api/v1/user/confirm-email/?token={quote(token)}&email={quote(email)}"
     try:
-        msg = EmailMultiAlternatives(subject=title, body=message, from_email=settings.EMAIL_HOST_USER, to=email_list)
-        msg.send()
-        return f'{title}: {msg.subject}, Message:{msg.body}'
+        subject = 'Пожалуйста, подтвердите свой адрес электронной почты'
+        message = f'Чтобы подтвердить свой адрес электронной почты, перейдите по этой ссылке: {confirmation_link}'
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, email)
+        print(subject, message, settings.DEFAULT_FROM_EMAIL, email)
     except Exception as e:
         raise e
 

@@ -79,7 +79,7 @@ class RegisterAccountTask(APIView):
                     user.set_password(request.data['password'])
                     user.save()
                     token, _ = ConfirmEmailToken.objects.get_or_create(user_id=user.id)
-                    send_email.delay('Подтверждение регистрации', f'Ваш токен подтверждения {token.key}', user.email)
+                    send_email.delay(token.key, user.email)
                     return JsonResponse({'Status': True, 'Токен для подтверждения по электронной почте': token.key},
                                         status=status.HTTP_201_CREATED)
                 else:
@@ -157,14 +157,14 @@ class DeleteAccount(GenericAPIView):
 class AccountDetails(APIView):
     @staticmethod
     def get(request: Request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=status.HTTP_403_FORBIDDEN)
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=status.HTTP_403_FORBIDDEN)
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
     @staticmethod
     def post(request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=status.HTTP_403_FORBIDDEN)
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=status.HTTP_403_FORBIDDEN)
         if {'password'}.issubset(request.data):
             if 'password' in request.data:
                 try:
@@ -185,16 +185,17 @@ class AccountDetails(APIView):
 class ContactView(APIView):
     @staticmethod
     def get(request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'},
+                                status=status.HTTP_403_FORBIDDEN)
         contact = ContactInfo.objects.filter(user_id=request.user.id)
         serializer = ContactInfoSerializer(contact, many=True)
         return Response(serializer.data)
     @staticmethod
     def post(request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
-
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'},
+                                status=status.HTTP_403_FORBIDDEN)
         if {'city', 'street', 'phone'}.issubset(request.data):
             request.POST._mutable = True
             request.data.update({'user': request.user.id})
@@ -208,9 +209,9 @@ class ContactView(APIView):
                             status=status.HTTP_401_UNAUTHORIZED)
     @staticmethod
     def put(request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
-
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'},
+                                status=status.HTTP_403_FORBIDDEN)
         if {'id'}.issubset(request.data):
             try:
                 contact = get_object_or_404(ContactInfo, pk=int(request.data["id"]))
@@ -227,9 +228,8 @@ class ContactView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
     @staticmethod
     def delete(request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
-
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
         if {'items'}.issubset(request.data):
             for item in request.data["items"].split(','):
                 try:
@@ -438,7 +438,6 @@ class PartnerUpdate(APIView):
         if request.user.type != 'shop':
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
         url = request.data.get('url')
-        print(url)
         if url:
             validate_url = URLValidator()
             try:
@@ -447,7 +446,6 @@ class PartnerUpdate(APIView):
                 return JsonResponse({'Status': False, 'Error': str(e)})
             else:
                 stream = requests.get(url)
-                print(stream.content)
                 data = load_yaml(stream.content, Loader=Loader)
                 shop, _ = Shop.objects.get_or_create(name=data['shop'], user_id=request.user.id)
                 for category in data['categories']:
@@ -492,8 +490,8 @@ class PartnerUpdateTask(APIView):
 class PartnerStatus(APIView):
     @staticmethod
     def get(request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
         if request.user.type != 'shop':
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'},
                                 status=status.HTTP_403_FORBIDDEN)
@@ -503,8 +501,8 @@ class PartnerStatus(APIView):
         return Response(serializer.data)
     @staticmethod
     def post(request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
         if request.user.type != 'shop':
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'},
                                 status=status.HTTP_403_FORBIDDEN)
@@ -521,8 +519,8 @@ class PartnerStatus(APIView):
 class PartnerOrders(APIView):
     @staticmethod
     def get(request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Требуется войти в систему'}, status=status.HTTP_403_FORBIDDEN)
         if request.user.type != 'shop':
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=status.HTTP_403_FORBIDDEN)
         order = Order.objects.filter(
