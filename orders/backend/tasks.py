@@ -19,8 +19,8 @@ def send_email(token, email):
     try:
         subject = 'Пожалуйста, подтвердите свой адрес электронной почты'
         message = f'Чтобы подтвердить свой адрес электронной почты, перейдите по этой ссылке: {confirmation_link}'
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, email)
-        print(subject, message, settings.DEFAULT_FROM_EMAIL, email)
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, list_to)
+        print(subject, message, settings.DEFAULT_FROM_EMAIL, list_to)
     except Exception as e:
         raise e
 
