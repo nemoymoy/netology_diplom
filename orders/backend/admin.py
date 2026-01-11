@@ -111,6 +111,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'dt', 'status', 'contact')
     search_fields = ['user__email']
     list_filter = ('status',)
+    readonly_fields = ('dt',)
     inlines = [OrderItemInline, ]
 
 
