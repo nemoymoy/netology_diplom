@@ -73,7 +73,7 @@ def test_user_confirm(api_client, user_factory, confirm_email_token_factory):
     """Тест подтверждения регистрации пользователя по email."""
     user = user_factory()
     token = confirm_email_token_factory(user=user)
-    user.confirm_email_tokens.add(token)
+    # user.confirm_email_tokens.add(token)
     url = reverse("user-register-confirm")
     response = api_client.post(url, data={"email": user.email, "token": "wrong_key"})
     assert response.status_code == HTTP_401_UNAUTHORIZED
@@ -136,7 +136,7 @@ def test_user_details(api_client, user_factory):
         "is_active": True,
         "type": "buyer",
     }
-    api_client.force_authenticate(email="nemoymoy@yandex.ru", password="123qwerty!")
+    api_client.force_authenticate(user=response.json().get('User'))
     response = api_client.post(url, data, format='json')
     assert response.status_code == HTTP_200_OK
 
@@ -184,7 +184,7 @@ def test_shop_create_success(api_client):
     assert response.status_code == HTTP_201_CREATED
     assert response.json().get('Status') is True
 
-    api_client.force_authenticate(email="nemoymoy@yandex.ru", password="Aa12345678!")
+    api_client.force_authenticate(user=response.json().get('User'))
     url = reverse('shop-create')
     data = {
         "email": "nemoymoy@yandex.ru",
@@ -248,7 +248,7 @@ def test_basket_view_get_authenticated(api_client):
     assert response.status_code == HTTP_201_CREATED
     assert response.json().get('Status') is True
 
-    user = api_client.force_authenticate(email="nemoymoy@yandex.ru", password="Aa12345678!")
+    user = api_client.force_authenticate(user=response.json().get('User'))
 
     url = reverse('basket')
     data = {

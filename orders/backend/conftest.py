@@ -76,6 +76,6 @@ def category_factory():
 @pytest.fixture
 def contact_factory():
     def factory(**kwargs):
-        return baker.make('backend.Contact', **kwargs)
+        return baker.make('backend.ContactInfo', **kwargs)
 
     return factory
