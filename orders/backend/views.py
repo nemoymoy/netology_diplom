@@ -334,9 +334,9 @@ class OrderView(APIView):
     def get(request, *args, **kwargs):
         order = Order.objects.filter(
             user_id=request.user.id).exclude(state='basket').prefetch_related(
-            'ordered_items__product_info__product__category',
-            'ordered_items__product_info__product_parameters__parameter').select_related('contact').annotate(
-            total_sum=Sum(F('ordered_items__quantity') * F('ordered_items__product_info__price'))
+            'product_info_for_order_item__product_for_product_info__product__category',
+            'product_info_for_order_item__product_for_product_info__parameter_for_product_parameter__parameter').select_related('contact').annotate(
+            total_sum=Sum(F('product_info_for_order_item__quantity') * F('product_info_for_order_item__product_for_product_info__price'))
         ).distinct().order_by('-date')
         serializer = OrderSerializer(order, many=True)
         return Response(serializer.data)
@@ -366,8 +366,8 @@ class BasketView(APIView):
     def get(request, *args, **kwargs):
         basket = Order.objects.filter(
             user_id=request.user.id, status='basket').prefetch_related(
-            'product_info_for_order_item__product_info__parameter_for_product_parameter__parameter').annotate(
-            total_sum=Sum(F('product_info_for_order_item__quantity') * F('product_info_for_order_item__product_info__price'))).distinct()
+            'product_info_for_order_item__product_for_product_info__parameter_for_product_parameter__parameter').annotate(
+            total_sum=Sum(F('product_info_for_order_item__quantity') * F('product_info_for_order_item__product_for_product_info__price'))).distinct()
         serializer = OrderSerializer(basket, many=True)
         return Response(serializer.data)
     @staticmethod
@@ -530,9 +530,9 @@ class PartnerOrders(APIView):
             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=status.HTTP_403_FORBIDDEN)
         order = Order.objects.filter(
             ordered_items__product_info__shop__user_id=request.user.id).exclude(state='basket').prefetch_related(
-            'ordered_items__product_info__product__category',
-            'ordered_items__product_info__product_parameters__parameter').select_related('contact').annotate(
-            total_sum=Sum(F('ordered_items__quantity') * F('ordered_items__product_info__price'))).distinct()
+            'product_info_for_order_item__product_for_product_info__product__category',
+            'product_info_for_order_item__product_for_product_info__product_parameters__parameter').select_related('contact').annotate(
+            total_sum=Sum(F('product_info_for_order_item__quantity') * F('product_info_for_order_item__product_for_product_info__price'))).distinct()
         serializer = OrderSerializer(order, many=True)
         send_email.delay('Обновление статуса заказа', 'Заказ обработан', request.user.email)
         return Response(serializer.data)
