@@ -122,7 +122,7 @@ class Shop(models.Model):
 
 class Category(models.Model):
     objects = models.manager.Manager()
-    shops = models.ManyToManyField(Shop, verbose_name="Магазины", related_name="shops_for_category", blank=True)
+    shops = models.ManyToManyField(Shop, verbose_name="Магазины", related_name="categories", blank=True)
     name = models.CharField(verbose_name="Название категории", max_length=100)
 
     def __str__(self):
@@ -135,7 +135,7 @@ class Category(models.Model):
 
 class Product(models.Model):
     objects = models.manager.Manager()
-    category = models.ForeignKey(Category, verbose_name="Категория", related_name="category_for_product", blank=True,
+    category = models.ForeignKey(Category, verbose_name="Категория", related_name="products", blank=True,
                                  on_delete=models.CASCADE)
     name = models.CharField(verbose_name="Название продукта", max_length=100)
 
@@ -151,9 +151,9 @@ class ProductInfo(models.Model):
     objects = models.manager.Manager()
     model = models.CharField(verbose_name='Модель', max_length=80, blank=True)
     external_id = models.PositiveIntegerField(verbose_name='Внешний ИД')
-    product = models.ForeignKey(Product, verbose_name="Продукт", related_name="product_for_product_info", blank=True,
+    product = models.ForeignKey(Product, verbose_name="Продукт", related_name="products_info", blank=True,
                                 on_delete=models.CASCADE)
-    shop = models.ForeignKey(Shop, verbose_name="Магазин", related_name="shop_for_product_info", blank=True,
+    shop = models.ForeignKey(Shop, verbose_name="Магазин", related_name="products_info", blank=True,
                              on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name="Количество")
     price = models.PositiveIntegerField(verbose_name="Цена")
@@ -182,8 +182,8 @@ class Parameter(models.Model):
 class ProductParameter(models.Model):
     objects = models.manager.Manager()
     product_info = models.ForeignKey(ProductInfo, verbose_name="Информация о продукте",
-                                     related_name="product_info_for_product_parameter", blank=True, on_delete=models.CASCADE)
-    parameter = models.ForeignKey(Parameter, verbose_name="Параметр", related_name="parameter_for_product_parameter",
+                                     related_name="product_parameters", blank=True, on_delete=models.CASCADE)
+    parameter = models.ForeignKey(Parameter, verbose_name="Параметр", related_name="product_parameters",
                                   blank=True, on_delete=models.CASCADE)
     value = models.CharField(verbose_name="Значение параметра", max_length=50)
 
@@ -198,7 +198,7 @@ class ProductParameter(models.Model):
 
 class ContactInfo(models.Model):
     objects = models.manager.Manager()
-    user = models.ForeignKey(CustomUser, verbose_name="Пользователь", related_name='user_for_contact_info', blank=True,
+    user = models.ForeignKey(CustomUser, verbose_name="Пользователь", related_name='contacts', blank=True,
                              on_delete=models.CASCADE)
     city = models.CharField(verbose_name='Город', max_length=50)
     street = models.CharField(verbose_name='Улица', max_length=100)
@@ -218,7 +218,7 @@ class ContactInfo(models.Model):
 
 class Order(models.Model):
     objects = models.manager.Manager()
-    user = models.ForeignKey(CustomUser, verbose_name="Пользователь", related_name='user_for_order', blank=True,
+    user = models.ForeignKey(CustomUser, verbose_name="Пользователь", related_name='orders', blank=True,
                              on_delete=models.CASCADE)
     dt = models.DateTimeField(auto_now_add=True)
     status = models.CharField(verbose_name='Статус', choices=STATE_CHOICES, max_length=15)
@@ -235,12 +235,12 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     objects = models.manager.Manager()
-    order = models.ForeignKey(Order, verbose_name="Заказ", related_name='order_for_order_item', blank=True,
+    order = models.ForeignKey(Order, verbose_name="Заказ", related_name='ordered_items', blank=True,
                               on_delete=models.CASCADE)
     product_info = models.ForeignKey(ProductInfo, verbose_name="Информация о продукте",
-                                     related_name='product_info_for_order_item',blank=True, null=True,
+                                     related_name='ordered_items',blank=True, null=True,
                                      on_delete=models.CASCADE)
-    shop = models.ForeignKey(Shop, verbose_name='Магазин', related_name='shop_for_order_item', blank=True, null=True,
+    shop = models.ForeignKey(Shop, verbose_name='Магазин', related_name='order_items', blank=True, null=True,
                              on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name='Количество')
 
@@ -255,7 +255,7 @@ class OrderItem(models.Model):
 
 class ConfirmEmailToken(models.Model):
     objects = models.manager.Manager()
-    user = models.ForeignKey(CustomUser, verbose_name="Пользователь", related_name='user_for_confirm_email_token',
+    user = models.ForeignKey(CustomUser, verbose_name="Пользователь", related_name='confirm_email_tokens',
                              blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(verbose_name="Когда создан токен", auto_now_add=True)
     key = models.CharField(verbose_name="Key", max_length=64, db_index=True, unique=True)
