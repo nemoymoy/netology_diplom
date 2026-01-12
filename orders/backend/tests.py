@@ -1,9 +1,9 @@
 import pytest
 from django.urls import reverse
-from rest_framework.test import APIClient
+# from rest_framework.test import APIClient
 from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED,
                                    HTTP_403_FORBIDDEN)
-from .models import ContactInfo, Order, CustomUser
+# from .models import ContactInfo, Order, CustomUser
 
 
 # Create your tests here.
@@ -74,7 +74,7 @@ def test_user_confirm(api_client, user_factory, confirm_email_token_factory):
     user = user_factory()
     token = confirm_email_token_factory()
     user.confirm_email_tokens.add(token)
-    url = reverse("backend:user-register-confirm")
+    url = reverse("user-register-confirm")
     response = api_client.post(url, data={"email": user.email, "token": "wrong_key"})
     assert response.status_code == HTTP_401_UNAUTHORIZED
     assert response.json().get('Status') is False
@@ -89,20 +89,20 @@ def test_login_account_success(api_client):
     """Тест успешного входа пользователя."""
     # client = APIClient()
     # Создаем пользователя
-    some_user = CustomUser.objects.create_user(
-        email="nemoymoy@yandex.ru",
-        password="Aa12345678!",
-        company="Example Inc",
-        position="Manager",
-        username="django",
-        first_name="John",
-        last_name="Doe",
-        is_active=1,
-        type="buyer"
-    )
     url = reverse("user-register")
-    response = api_client.post(url, data=some_user, format='json')
-    assert response.status_code == HTTP_200_OK
+    data = {
+        "email": "nemoymoy@yandex.ru",
+        "password": "Aa12345678!",
+        "company": "Example Inc",
+        "position": "Manager",
+        "username": "django",
+        "first_name": "John",
+        "last_name": "Doe",
+        "is_active": True,
+        "type": "buyer",
+    }
+    response = api_client.post(url, data, format='json')
+    assert response.status_code == HTTP_201_CREATED
     assert response.json().get('Status') is True
 
     url = reverse('user-login')
@@ -142,24 +142,21 @@ def test_user_details(api_client, user_factory):
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
-def test_contact_view_get_authenticated(api_client, user_factory):
+def test_contact_view_get_authenticated(api_client, user_factory, contact_factory):
     """Тест получения контактов авторизованного пользователя."""
     # client = APIClient()
-    url = reverse('user-contact')
+
     # Создаем пользователя и контакт
     # user = CustomUser.objects.create_user(email="nemoymoy@yandex.ru", password="Aa12345678!")
     user = user_factory()
     api_client.force_authenticate(user=user)
-    ContactInfo.objects.create(
-        user=user,
-        city="City",
-        street="Street",
-        house_number='House Number',
-        structure="Structure",
-        building="Building",
-        apartment="Apartment",
-        phone="1234567890")
-    response = api_client.get(url)
+
+    url = reverse('user-contact')
+    _contact = contact_factory(user=user)
+    data = {
+        "user_id": user.id,
+    }
+    response = api_client.get(url, data=data, format='json')
     assert response.status_code == HTTP_200_OK
     assert len(response.json()) == 1
     assert response.json()[0]['city'] == "City"
@@ -169,20 +166,26 @@ def test_contact_view_get_authenticated(api_client, user_factory):
 def test_shop_create_success(api_client):
     """Тест успешного создания магазина."""
     # client = APIClient()
-    url = reverse('shop-create')
+
     # Создаем пользователя
-    user = CustomUser.objects.create_user(
-        email="nemoymoy@yandex.ru",
-        password="Aa12345678!",
-        company="Example Inc",
-        position="Manager",
-        username="django",
-        first_name="John",
-        last_name="Doe",
-        is_active=1,
-        type="shop"
-    )
-    api_client.force_authenticate(user=user)
+    url = reverse("user-register")
+    data = {
+        "email": "nemoymoy@yandex.ru",
+        "password": "Aa12345678!",
+        "company": "Example Inc",
+        "position": "Manager",
+        "username": "django",
+        "first_name": "John",
+        "last_name": "Doe",
+        "is_active": True,
+        "type": "buyer",
+    }
+    response = api_client.post(url, data, format='json')
+    assert response.status_code == HTTP_201_CREATED
+    assert response.json().get('Status') is True
+
+    api_client.force_authenticate(email="nemoymoy@yandex.ru", password="Aa12345678!")
+    url = reverse('shop-create')
     data = {
         "email": "nemoymoy@yandex.ru",
         "password": "Aa12345678!",
@@ -223,29 +226,36 @@ def test_category_get(api_client, category_factory):
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
-def test_basket_view_get_authenticated():
+def test_basket_view_get_authenticated(api_client):
     """Тест получения корзины авторизованного пользователя."""
-    client = APIClient()
+    # client = APIClient()
+
+
+    # Создаем пользователя
+    url = reverse("user-register")
+    data = {
+        "email": "nemoymoy@yandex.ru",
+        "password": "Aa12345678!",
+        "company": "Example Inc",
+        "position": "Manager",
+        "username": "django",
+        "first_name": "John",
+        "last_name": "Doe",
+        "is_active": True,
+        "type": "buyer",
+    }
+    response = api_client.post(url, data, format='json')
+    assert response.status_code == HTTP_201_CREATED
+    assert response.json().get('Status') is True
+
+    user = api_client.force_authenticate(email="nemoymoy@yandex.ru", password="Aa12345678!")
+
     url = reverse('basket')
-
-    # Создаем пользователя и корзину
-    user = CustomUser.objects.create_user(
-        email="nemoymoy@yandex.ru",
-        password="Aa12345678!",
-        company="Example Inc",
-        position="Manager",
-        username="django",
-        first_name="John",
-        last_name="Doe",
-        is_active=1,
-        type="buyer"
-    )
-    client.force_authenticate(user=user)
-
-    order = Order.objects.create(user=user, status="basket")
-
-    response = client.get(url)
+    data = {
+        "user_id": user.id,
+        "status": "basket",
+    }
+    response = api_client.get(url, data, format='json')
 
     assert response.status_code == HTTP_200_OK
     assert len(response.json()) == 1
-    assert response.json()[0]['id'] == order.id

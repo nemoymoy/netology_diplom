@@ -52,8 +52,8 @@ INSTALLED_APPS = [
 
     'drf_spectacular',
 
-    # 'backend',           # Добавлено приложение
-    'backend.apps.BackendConfig',
+    'backend',           # Добавлено приложение
+    # 'backend.apps.BackendConfig',
 
     'rest_framework',
     'rest_framework.authtoken',
