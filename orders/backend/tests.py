@@ -242,8 +242,6 @@ def test_basket_view_get_authenticated(api_client):
 
     url = reverse('basket')
     data = {
-        "email": "nemoymoy@yandex.ru",
-        "password": "Aa12345678!",
         "status": "basket",
     }
     response = api_client.get(url, data, format='json')
