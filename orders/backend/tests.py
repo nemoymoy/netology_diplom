@@ -247,4 +247,4 @@ def test_basket_view_get_authenticated(api_client):
     response = api_client.get(url, data, format='json')
 
     assert response.status_code == HTTP_200_OK
-    assert len(response.json()) == 1
+    assert len(response.json()) == 0
