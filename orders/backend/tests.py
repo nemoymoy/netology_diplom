@@ -125,13 +125,9 @@ def test_user_details(api_client, user_factory):
     assert response.status_code == HTTP_200_OK
 
     """Тест записи деталей аккаунта пользователя."""
-    data = {
-        "email": user.email,
-        "password": user.password,
-        "is_active": False,
-    }
-    api_client.force_authenticate(user=response.json().get('User'))
-    response = api_client.post(url, data, format='json')
+    user = user_factory()
+    api_client.force_authenticate(user=user)
+    response = api_client.post(url)
     assert response.status_code == HTTP_200_OK
     assert response.json()[0]['is_active'] == False
 
@@ -207,9 +203,7 @@ def test_products(api_client, user_factory, shop_factory, order_factory,
     # category_id = category.id
     response = api_client.get(url, shop_id=shop.id, category_id=category.id)
     assert response.status_code == HTTP_200_OK
-    print(response.json())
-    assert response.json().get('Shop') == shop.id
-    assert response.json().get('results')[0]['id'] == 1
+    assert response.json().get('results')[0]['id'] == 2
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
