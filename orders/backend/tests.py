@@ -5,6 +5,7 @@ from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_R
                                    HTTP_403_FORBIDDEN)
 from .models import ContactInfo, Order, CustomUser
 
+
 # Create your tests here.
 
 @pytest.mark.urls('backend.urls')
@@ -203,7 +204,7 @@ def test_products(api_client, user_factory, shop_factory, order_factory,
     api_client.force_authenticate(user=customer)
     category = category_factory()
     product = product_factory(category=category)
-    product_info = product_info_factory(product=product, shop=shop)
+    _product_info = product_info_factory(product=product, shop=shop)
     # shop_id = shop.id
     # category_id = category.id
     response = api_client.get(url, shop_id=shop.id, category_id=category.id)
