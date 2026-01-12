@@ -72,7 +72,7 @@ def test_register_account_weak_password(api_client):
 def test_user_confirm(api_client, user_factory, confirm_email_token_factory):
     """Тест подтверждения регистрации пользователя по email."""
     user = user_factory()
-    token = confirm_email_token_factory()
+    token = confirm_email_token_factory(user=user)
     user.confirm_email_tokens.add(token)
     url = reverse("user-register-confirm")
     response = api_client.post(url, data={"email": user.email, "token": "wrong_key"})
