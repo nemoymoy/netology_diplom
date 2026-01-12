@@ -366,8 +366,8 @@ class BasketView(APIView):
     def get(request, *args, **kwargs):
         basket = Order.objects.filter(
             user_id=request.user.id, status='basket').prefetch_related(
-            'ordered_items__product_info__product_parameters__parameter').annotate(
-            total_sum=Sum(F('ordered_items__quantity') * F('ordered_items__product_info__price'))).distinct()
+            'product_info_for_order_item__product_info__parameter_for_product_parameter__parameter').annotate(
+            total_sum=Sum(F('product_info_for_order_item__quantity') * F('product_info_for_order_item__product_info__price'))).distinct()
         serializer = OrderSerializer(basket, many=True)
         return Response(serializer.data)
     @staticmethod

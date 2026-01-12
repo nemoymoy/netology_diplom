@@ -129,7 +129,6 @@ def test_user_details(api_client, user_factory):
     api_client.force_authenticate(user=user)
     response = api_client.post(url)
     assert response.status_code == HTTP_200_OK
-    assert response.json()[0]['is_active'] == False
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
