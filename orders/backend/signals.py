@@ -8,6 +8,7 @@ from .models import ConfirmEmailToken, CustomUser
 new_user_registered = Signal()
 new_order = Signal()
 
+
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, **kwargs):
     message = EmailMultiAlternatives(
@@ -18,9 +19,10 @@ def password_reset_token_created(sender, instance, reset_password_token, **kwarg
         # from:
         settings.EMAIL_HOST_USER,
         # to:
-        [reset_password_token.user.email]
+        [reset_password_token.user.email],
     )
     message.send()
+
 
 @receiver(new_user_registered)
 def new_user_registered_signal(user_id, **kwargs):
@@ -33,9 +35,10 @@ def new_user_registered_signal(user_id, **kwargs):
         # from:
         settings.EMAIL_HOST_USER,
         # to:
-        [token.user.email]
+        [token.user.email],
     )
     message.send()
+
 
 @receiver(new_order)
 def new_order_signal(user_id, **kwargs):
@@ -44,10 +47,10 @@ def new_order_signal(user_id, **kwargs):
         # title:
         f"Обновление статуса заказа",
         # message:
-        'Заказ сформирован',
+        "Заказ сформирован",
         # from:
         settings.EMAIL_HOST_USER,
         # to:
-        [user.email]
+        [user.email],
     )
     message.send()

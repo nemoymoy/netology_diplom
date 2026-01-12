@@ -10,4 +10,4 @@ class IsNotAuth(BasePermission):
 class IsShopOwner(BasePermission):
 
     def has_permission(self, request, view):
-        return request.user.type == 'shop'
+        return request.user.type == "shop"

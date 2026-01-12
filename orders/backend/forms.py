@@ -1,34 +1,49 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AdminUserCreationForm
+from django.contrib.auth.forms import (
+    UserCreationForm,
+    UserChangeForm,
+    AdminUserCreationForm,
+)
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from rest_framework.response import Response
 
-from .models import (CustomUser, ContactInfo, Order, Shop, ProductInfo,)
+from .models import (
+    CustomUser,
+    ContactInfo,
+    Order,
+    Shop,
+    ProductInfo,
+)
 from django.contrib.auth.decorators import login_required
 
 from .serializers import ContactInfoSerializer
 
 from allauth.socialaccount.forms import SignupForm
+
+
 class MyCustomSignupForm(SignupForm):
 
     def save(self, request):
         user = super(MyCustomSignupForm, self).save(request)
         return user
 
+
 class CustomUserCreationForm(AdminUserCreationForm):
 
     class Meta(AdminUserCreationForm.Meta):
         model = CustomUser
-        fields = '__all__'
+        fields = "__all__"
+
 
 class CustomUserChangeForm(UserChangeForm):
 
     class Meta(UserChangeForm.Meta):
         model = CustomUser
-        fields = '__all__'
+        fields = "__all__"
+
 
 class RegisterForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=True)
@@ -41,7 +56,7 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'company', 'position']
+        fields = ["first_name", "last_name", "email", "company", "position"]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -53,16 +68,20 @@ class RegisterForm(forms.ModelForm):
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(max_length=254, widget=forms.EmailInput(attrs={'placeholder': 'Email'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+    email = forms.EmailField(
+        max_length=254, widget=forms.EmailInput(attrs={"placeholder": "Email"})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
 
     def clean(self):
         cleaned_data = super().clean()
-        email = cleaned_data.get('email')
-        password = cleaned_data.get('password')
+        email = cleaned_data.get("email")
+        password = cleaned_data.get("password")
 
         if not (email and password):
-            raise forms.ValidationError('Требуются адрес электронной почты и пароль.')
+            raise forms.ValidationError("Требуются адрес электронной почты и пароль.")
 
         return cleaned_data
 
@@ -70,28 +89,29 @@ class LoginForm(forms.Form):
 class UserDeleteForm(forms.Form):
     confirm_delete = forms.BooleanField(
         label="Удалить учетную запись",
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         required=True,
-        error_messages={
-            "required": "Вы должны подтвердить удаление учетной записи."
-        }
+        error_messages={"required": "Вы должны подтвердить удаление учетной записи."},
     )
 
 
 class AccountDetailsForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ('email', 'password',)
-        widgets = {'password': forms.PasswordInput()}
+        fields = (
+            "email",
+            "password",
+        )
+        widgets = {"password": forms.PasswordInput()}
 
     def clean(self):
         cleaned_data = super().clean()
-        password = cleaned_data.get('password')
+        password = cleaned_data.get("password")
         if password:
             try:
                 validate_password(password)
             except Exception as e:
-                self.add_error('password', str(e))
+                self.add_error("password", str(e))
         return cleaned_data
 
 
@@ -102,19 +122,19 @@ class ContactForm(forms.ModelForm):
 
     class Meta:
         model = ContactInfo
-        fields = ['city', 'street', 'phone']
+        fields = ["city", "street", "phone"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['city'].widget.attrs.update({'placeholder': 'City'})
-        self.fields['street'].widget.attrs.update({'placeholder': 'Street'})
-        self.fields['phone'].widget.attrs.update({'placeholder': 'Phone'})
+        self.fields["city"].widget.attrs.update({"placeholder": "City"})
+        self.fields["street"].widget.attrs.update({"placeholder": "Street"})
+        self.fields["phone"].widget.attrs.update({"placeholder": "Phone"})
 
     def clean(self):
         cleaned_data = super().clean()
-        city = cleaned_data.get('city')
-        street = cleaned_data.get('street')
-        phone = cleaned_data.get('phone')
+        city = cleaned_data.get("city")
+        street = cleaned_data.get("street")
+        phone = cleaned_data.get("phone")
 
         if not all([city, street, phone]):
             raise forms.ValidationError("All fields are required.")
@@ -130,87 +150,91 @@ class ContactDeleteForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        items = cleaned_data.get('items')
+        items = cleaned_data.get("items")
 
         if not items:
-            raise forms.ValidationError("Please enter one or more contact IDs to delete.")
+            raise forms.ValidationError(
+                "Please enter one or more contact IDs to delete."
+            )
 
         try:
-            list_of_ids = items.split(',')
+            list_of_ids = items.split(",")
             for id in list_of_ids:
                 int(id)
         except ValueError:
-            raise forms.ValidationError("Invalid contact ID format. Please use comma-separated integers.")
+            raise forms.ValidationError(
+                "Invalid contact ID format. Please use comma-separated integers."
+            )
 
 
 class ContactUpdateForm(forms.ModelForm):
     class Meta:
         model = ContactInfo
-        fields = ['city', 'street', 'phone']
+        fields = ["city", "street", "phone"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['city'].widget.attrs.update({'placeholder': 'City'})
-        self.fields['street'].widget.attrs.update({'placeholder': 'Street'})
-        self.fields['phone'].widget.attrs.update({'placeholder': 'Phone'})
+        self.fields["city"].widget.attrs.update({"placeholder": "City"})
+        self.fields["street"].widget.attrs.update({"placeholder": "Street"})
+        self.fields["phone"].widget.attrs.update({"placeholder": "Phone"})
 
 
 @login_required
 def contact_view(request):
-    if request.method == 'GET':
+    if request.method == "GET":
         contacts = ContactInfo.objects.filter(user=request.user)
         serializer = ContactInfoSerializer(contacts, many=True)
-        return render(request, 'contact_list.html', {'serializer': serializer})
-    elif request.method == 'POST':
+        return render(request, "contact_list.html", {"serializer": serializer})
+    elif request.method == "POST":
         form = ContactForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('contact_list')
+            return redirect("contact_list")
         else:
-            return render(request, 'contact_form.html', {'form': form})
-    elif request.method == 'DELETE':
+            return render(request, "contact_form.html", {"form": form})
+    elif request.method == "DELETE":
         form = ContactDeleteForm(data=request.POST)
         if form.is_valid():
-            items = form.cleaned_data['items']
+            items = form.cleaned_data["items"]
             deleted_count = ContactInfo.objects.filter(
                 Q(user=request.user),
-                id__in=[int(item.strip()) for item in items.split(',')]
+                id__in=[int(item.strip()) for item in items.split(",")],
             ).delete()[0]
-            return Response({'Status': True, 'Удалено объектов': deleted_count})
+            return Response({"Status": True, "Удалено объектов": deleted_count})
         else:
-            return Response({'Status': False, 'Errors': form.errors})
-    elif request.method == 'PUT':
+            return Response({"Status": False, "Errors": form.errors})
+    elif request.method == "PUT":
         form = ContactUpdateForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('contact_list')
+            return redirect("contact_list")
         else:
-            return render(request, 'contact_update.html', {'form': form})
+            return render(request, "contact_update.html", {"form": form})
     else:
-        return render(request, 'contact_form.html', {'form': ContactForm()})
+        return render(request, "contact_form.html", {"form": ContactForm()})
 
 
 class ShopFormCreate(forms.ModelForm):
     class Meta:
         model = Shop
-        fields = ('name', 'url', 'status')
+        fields = ("name", "url", "status")
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Введите название магазина'}),
-            'url': forms.URLInput(attrs={'placeholder': 'Введите URL магазина'}),
-            'status': forms.CheckboxInput(),
+            "name": forms.TextInput(attrs={"placeholder": "Введите название магазина"}),
+            "url": forms.URLInput(attrs={"placeholder": "Введите URL магазина"}),
+            "status": forms.CheckboxInput(),
         }
 
     def clean(self):
         cleaned_data = super().clean()
-        email = self.cleaned_data.get('email')
-        password = self.cleaned_data.get('password')
+        email = self.cleaned_data.get("email")
+        password = self.cleaned_data.get("password")
         return cleaned_data
 
 
 class ShopFormStatus(forms.ModelForm):
     class Meta:
         model = Shop
-        fields = ('status',)
+        fields = ("status",)
 
 
 class PriceUpdateForm(forms.ModelForm):
@@ -220,7 +244,7 @@ class PriceUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['email', 'password']
+        fields = ["email", "password"]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -237,14 +261,14 @@ class PriceUpdateForm(forms.ModelForm):
 
 
 class ProductInfoFilterForm(forms.Form):
-    shop_id = forms.IntegerField(label='Shop ID', required=False)
-    category_id = forms.IntegerField(label='Category ID', required=False)
+    shop_id = forms.IntegerField(label="Shop ID", required=False)
+    category_id = forms.IntegerField(label="Category ID", required=False)
 
     def clean(self):
         cleaned_data = super().clean()
 
-        shop_id = cleaned_data.get('shop_id')
-        category_id = cleaned_data.get('category_id')
+        shop_id = cleaned_data.get("shop_id")
+        category_id = cleaned_data.get("category_id")
 
         if shop_id and category_id:
             raise forms.ValidationError("Cannot specify both Shop ID and Category ID.")
@@ -255,18 +279,23 @@ class ProductInfoFilterForm(forms.Form):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ('status', 'contact')
+        fields = ("status", "contact")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['status'].widget.attrs.update({'readonly': True})
+        self.fields["status"].widget.attrs.update({"readonly": True})
 
 
 class AddToBasketForm(forms.Form):
-    product_id = forms.IntegerField(label="ID товара",
-                                    widget=forms.NumberInput(attrs={'placeholder': 'Введите ID товара'}))
-    quantity = forms.IntegerField(label="Количество", min_value=1,
-                                  widget=forms.NumberInput(attrs={'placeholder': 'Введите количество'}))
+    product_id = forms.IntegerField(
+        label="ID товара",
+        widget=forms.NumberInput(attrs={"placeholder": "Введите ID товара"}),
+    )
+    quantity = forms.IntegerField(
+        label="Количество",
+        min_value=1,
+        widget=forms.NumberInput(attrs={"placeholder": "Введите количество"}),
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -287,17 +316,23 @@ class AddToBasketForm(forms.Form):
 
 
 class OrderFilterForm(forms.Form):
-    status = forms.ChoiceField(choices=[('basket', 'Basket'), ('in_progress', 'In Progress'), ('completed', 'Completed')])
+    status = forms.ChoiceField(
+        choices=[
+            ("basket", "Basket"),
+            ("in_progress", "In Progress"),
+            ("completed", "Completed"),
+        ]
+    )
     shop_name = forms.CharField(max_length=255, required=False)
     min_date = forms.DateField(required=False)
     max_date = forms.DateField(required=False)
 
     def clean(self):
         cleaned_data = super().clean()
-        status = cleaned_data.get('status')
-        shop_name = cleaned_data.get('shop_name')
-        min_date = cleaned_data.get('min_date')
-        max_date = cleaned_data.get('max_date')
+        status = cleaned_data.get("status")
+        shop_name = cleaned_data.get("shop_name")
+        min_date = cleaned_data.get("min_date")
+        max_date = cleaned_data.get("max_date")
 
         if status and not (shop_name or min_date or max_date):
             raise forms.ValidationError("At least one filter criteria must be selected")

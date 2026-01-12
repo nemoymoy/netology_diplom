@@ -12,70 +12,61 @@ def api_client():
 @pytest.fixture
 def user_factory():
     def factory(**kwargs):
-        return baker.make('backend.CustomUser', **kwargs)
-
+        return baker.make("backend.CustomUser", **kwargs)
     return factory
 
 
 @pytest.fixture
 def confirm_email_token_factory():
     def factory(**kwargs):
-        return baker.make('backend.ConfirmEmailToken', **kwargs)
-
+        return baker.make("backend.ConfirmEmailToken", **kwargs)
     return factory
 
 
 @pytest.fixture
 def shop_factory():
     def factory(**kwargs):
-        return baker.make('backend.Shop', **kwargs)
-
+        return baker.make("backend.Shop", **kwargs)
     return factory
 
 
 @pytest.fixture
 def order_factory():
     def factory(**kwargs):
-        return baker.make('backend.Order', **kwargs)
-
+        return baker.make("backend.Order", **kwargs)
     return factory
 
 
 @pytest.fixture
 def order_item_factory():
     def factory(**kwargs):
-        return baker.make('backend.OrderItem', **kwargs)
-
+        return baker.make("backend.OrderItem", **kwargs)
     return factory
 
 
 @pytest.fixture
 def product_info_factory():
     def factory(**kwargs):
-        return baker.make('backend.ProductInfo', **kwargs)
-
+        return baker.make("backend.ProductInfo", **kwargs)
     return factory
 
 
 @pytest.fixture
 def product_factory():
     def factory(**kwargs):
-        return baker.make('backend.Product', **kwargs)
-
+        return baker.make("backend.Product", **kwargs)
     return factory
 
 
 @pytest.fixture
 def category_factory():
     def factory(**kwargs):
-        return baker.make('backend.Category', **kwargs)
-
+        return baker.make("backend.Category", **kwargs)
     return factory
 
 
 @pytest.fixture
 def contact_factory():
     def factory(**kwargs):
-        return baker.make('backend.ContactInfo', **kwargs)
-
+        return baker.make("backend.ContactInfo", **kwargs)
     return factory
