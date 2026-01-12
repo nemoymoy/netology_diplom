@@ -126,19 +126,14 @@ def test_user_details(api_client, user_factory):
 
     """Тест записи деталей аккаунта пользователя."""
     data = {
-        "email": "nemoymoy@yandex.ru",
-        "password": "123qwerty!",
-        "company": "Example Inc",
-        "position": "Manager",
-        "username": "django",
-        "first_name": "John",
-        "last_name": "Doe",
-        "is_active": True,
-        "type": "buyer",
+        "email": user.email,
+        "password": user.password,
+        "is_active": False,
     }
     api_client.force_authenticate(user=response.json().get('User'))
     response = api_client.post(url, data, format='json')
     assert response.status_code == HTTP_200_OK
+    assert response.json()[0]['is_active'] == False
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
@@ -152,14 +147,14 @@ def test_contact_view_get_authenticated(api_client, user_factory, contact_factor
     api_client.force_authenticate(user=user)
 
     url = reverse('user-contact')
-    _contact = contact_factory(user=user)
+    contact = contact_factory(user=user)
     data = {
         "user_id": user.id,
     }
     response = api_client.get(url, data=data, format='json')
     assert response.status_code == HTTP_200_OK
     assert len(response.json()) == 1
-    assert response.json()[0]['city'] == "City"
+    assert response.json()[0]['city'] == contact.city
 
 @pytest.mark.urls('backend.urls')
 @pytest.mark.django_db
@@ -212,6 +207,8 @@ def test_products(api_client, user_factory, shop_factory, order_factory,
     # category_id = category.id
     response = api_client.get(url, shop_id=shop.id, category_id=category.id)
     assert response.status_code == HTTP_200_OK
+    print(response.json())
+    assert response.json().get('Shop') == shop.id
     assert response.json().get('results')[0]['id'] == 1
 
 @pytest.mark.urls('backend.urls')
