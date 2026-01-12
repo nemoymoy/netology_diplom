@@ -6,7 +6,6 @@ from django.core.mail import send_mail
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from urllib.parse import quote
 
 from .models import Shop, Category, Product, Parameter, ProductParameter, ProductInfo
 
