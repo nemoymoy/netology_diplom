@@ -48,7 +48,8 @@ from .serializers import (
     OrderItemSerializer,
 )
 
-from .tasks import send_email, get_import
+from .tasks import send_email, get_import, create_thumbnail_for_avatar_user, create_thumbnail_for_avatar_product
+
 
 # Create your views here.
 
@@ -842,6 +843,8 @@ def avatar_user(request):
         form = AvatarUserImageForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            user = request.user
+            create_thumbnail_for_avatar_user.delay(user_id=user.id)
             return redirect("avatar_user")
     else:
         form = AvatarUserImageForm()
@@ -864,6 +867,8 @@ def avatar_product(request):
         form = AvatarProductImageForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            product = request.product
+            create_thumbnail_for_avatar_product.delay(product_id=product.id)
             return redirect("avatar_product")
     else:
         form = AvatarProductImageForm()

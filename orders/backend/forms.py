@@ -25,7 +25,7 @@ from .serializers import ContactInfoSerializer
 class AvatarUserImageForm(forms.ModelForm):
     class Meta:
         model = AvatarUser
-        fields = ["title", "image"]
+        fields = ["user", "title", "image"]
         widgets = {
             "image": ImageClearableFileInput,
         }
@@ -33,7 +33,7 @@ class AvatarUserImageForm(forms.ModelForm):
 class AvatarProductImageForm(forms.ModelForm):
     class Meta:
         model = AvatarProduct
-        fields = ["title", "image"]
+        fields = ["product", "title", "image"]
         widgets = {
             "image": ImageClearableFileInput,
         }

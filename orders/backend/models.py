@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from datetime import timedelta
 from easy_thumbnails.fields import ThumbnailerImageField
-from .tasks import create_thumbnail_for_avatar_user, create_thumbnail_for_avatar_product
+# from .tasks import create_thumbnail_for_avatar_user, create_thumbnail_for_avatar_product
 
 USER_TYPE_CHOICES = (("shop", "Магазин"), ("buyer", "Покупатель"))
 
@@ -459,8 +459,8 @@ class AvatarUser(models.Model):
         if not self.title:
             self.title = self.user.username
         super(AvatarUser, self).save(*args, **kwargs)
-        if self.image:
-            create_thumbnail_for_avatar_user(user_id=self.user.id)
+        # if self.image:
+        #     create_thumbnail_for_avatar_user(user_id=self.user.id)
 
 
 class AvatarProduct(models.Model):
@@ -499,5 +499,5 @@ class AvatarProduct(models.Model):
         if not self.title:
             self.title = self.product.name
         super(AvatarProduct, self).save(*args, **kwargs)
-        if self.image:
-            create_thumbnail_for_avatar_product(product_id=self.product.id)
+        # if self.image:
+        #     create_thumbnail_for_avatar_product(product_id=self.product.id)
