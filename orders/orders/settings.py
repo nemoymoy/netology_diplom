@@ -93,7 +93,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            path.join(BASE_DIR, "backend", "templates", "backend")
+            path.join(BASE_DIR, "backend", "templates", "mainapp")
         ],  # используем каталог шаблонов на уровне проекта
         "APP_DIRS": True,
         "OPTIONS": {
@@ -179,6 +179,21 @@ STATIC_ROOT = BASE_DIR / "static"
 # Аналогично с media файлами
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+THUMBNAIL_DEFAULT_STORAGE_ALIAS = "easy_thumbnails"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "easy_thumbnails": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        # "BACKEND": "easy_thumbnails.tests.TemporaryStorage",
+    },
+}
 
 
 # Для TokenAuthentication
