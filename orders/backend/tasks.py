@@ -1,5 +1,6 @@
 from celery import shared_task
 import requests
+from easy_thumbnails.files import get_thumbnailer
 from yaml import load as load_yaml, Loader
 from django.conf import settings
 from django.core.mail import send_mail
@@ -7,7 +8,7 @@ from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
-from .models import Shop, Category, Product, Parameter, ProductParameter, ProductInfo
+from .models import Shop, Category, Product, Parameter, ProductParameter, ProductInfo, AvatarUser, AvatarProduct
 
 
 @shared_task
@@ -64,3 +65,27 @@ def get_import(partner, url):
                 )
         return {"Status": True}
     return {"Status": False, "Errors": "Url-адрес является ложным"}
+
+@shared_task
+def create_thumbnail_for_avatar_user(user_id):
+    user_profile = AvatarUser.objects.get(user_id=user_id)
+    if user_profile.image:
+        thumbnailer = get_thumbnailer(user_profile.image)
+        thumbnail = thumbnailer.get_thumbnail({
+            'size': (100, 100),
+            'crop': True,
+        })
+        # Сохраняем миниатюру (если нужно)
+        thumbnail.save()
+
+@shared_task
+def create_thumbnail_for_avatar_product(product_id):
+    product_profile = AvatarProduct.objects.get(product_id=product_id)
+    if product_profile.image:
+        thumbnailer = get_thumbnailer(product_profile.image)
+        thumbnail = thumbnailer.get_thumbnail({
+            'size': (100, 100),
+            'crop': True,
+        })
+        # Сохраняем миниатюру (если нужно)
+        thumbnail.save()
