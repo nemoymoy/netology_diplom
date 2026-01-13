@@ -15,14 +15,16 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.validators import URLValidator
 from django.contrib.auth import authenticate
 from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404, redirect, render
 
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework.generics import ListAPIView, GenericAPIView, get_object_or_404
+from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework import status
 
+from .forms import AvatarUserImageForm, AvatarProductImageForm
 from .models import (
     Shop,
     CustomUser,
@@ -34,7 +36,7 @@ from .models import (
     Order,
     OrderItem,
     ContactInfo,
-    ConfirmEmailToken,
+    ConfirmEmailToken, AvatarUser, AvatarProduct,
 )
 from .serializers import (
     UserSerializer,
@@ -834,3 +836,47 @@ class PartnerOrders(APIView):
             "Обновление статуса заказа", "Заказ обработан", request.user.email
         )
         return Response(serializer.data)
+
+def avatar_user(request):
+    if request.method == "POST":
+        form = AvatarUserImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("avatar_user")
+    else:
+        form = AvatarUserImageForm()
+    images = AvatarUser.objects.all()
+    return render(request, "mainapp/avatar_user.html", {"form": form, "images": images})
+
+def edit_image_user(request, pk):
+    image = get_object_or_404(AvatarUser, pk=pk)
+    if request.method == "POST":
+        form = AvatarUserImageForm(request.POST, request.FILES, instance=image)
+        if form.is_valid():
+            form.save()
+            return redirect("avatar_user")
+    else:
+        form = AvatarUserImageForm(instance=image)
+    return render(request, "mainapp/edit_image_user.html", {"form": form, "image": image})
+
+def avatar_product(request):
+    if request.method == "POST":
+        form = AvatarProductImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("avatar_product")
+    else:
+        form = AvatarProductImageForm()
+    images = AvatarProduct.objects.all()
+    return render(request, "mainapp/avatar_product.html", {"form": form, "images": images})
+
+def edit_image_product(request, pk):
+    image = get_object_or_404(AvatarUser, pk=pk)
+    if request.method == "POST":
+        form = AvatarProductImageForm(request.POST, request.FILES, instance=image)
+        if form.is_valid():
+            form.save()
+            return redirect("avatar_product")
+    else:
+        form = AvatarProductImageForm(instance=image)
+    return render(request, "mainapp/edit_image_product.html", {"form": form, "image": image})

@@ -30,7 +30,7 @@ class AvatarUserImageForm(forms.ModelForm):
             "image": ImageClearableFileInput,
         }
 
-class ProductUserImageForm(forms.ModelForm):
+class AvatarProductImageForm(forms.ModelForm):
     class Meta:
         model = AvatarProduct
         fields = ["title", "image"]
