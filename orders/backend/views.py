@@ -871,7 +871,7 @@ def avatar_product(request):
     return render(request, "mainapp/avatar_product.html", {"form": form, "images": images})
 
 def edit_image_product(request, pk):
-    image = get_object_or_404(AvatarUser, pk=pk)
+    image = get_object_or_404(AvatarProduct, pk=pk)
     if request.method == "POST":
         form = AvatarProductImageForm(request.POST, request.FILES, instance=image)
         if form.is_valid():
