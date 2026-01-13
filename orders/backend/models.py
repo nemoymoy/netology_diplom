@@ -13,6 +13,8 @@ from django_rest_passwordreset.tokens import get_token_generator
 from django.utils import timezone
 from django.core.mail import send_mail
 from datetime import timedelta
+from easy_thumbnails.fields import ThumbnailerImageField
+from .tasks import create_thumbnail_for_avatar_user, create_thumbnail_for_avatar_product
 
 USER_TYPE_CHOICES = (("shop", "Магазин"), ("buyer", "Покупатель"))
 
@@ -419,3 +421,83 @@ class ConfirmEmailToken(models.Model):
     def set_expiry(self, seconds):
         """Для установки срока действия для этого токена."""
         self.expires = self.created_at + timedelta(seconds=seconds)
+
+
+class AvatarUser(models.Model):
+    objects = models.manager.Manager()
+    user = models.OneToOneField(
+        CustomUser,
+        verbose_name="Пользователь",
+        related_name="avatar_user",
+        on_delete=models.CASCADE
+    )
+    title = models.CharField(
+        verbose_name="Имя файла",
+        max_length=100,
+        blank=True,
+        null=True
+    )
+    image = ThumbnailerImageField(
+        verbose_name="Аватар",
+        upload_to="images_user/",
+        blank=True,
+        null=True
+    )
+
+    def __str__(self):
+        return self.title, self.user.username
+
+    class Meta:
+        ordering = ["user"]
+        verbose_name = "Аватар Пользователя"
+        verbose_name_plural = "Аватары Пользователей"
+        constraints = [
+            models.UniqueConstraint(fields=["user"], name="unique_avatar")
+        ]
+
+    def save(self, *args, **kwargs):
+        if not self.title:
+            self.title = self.user.username
+        super(AvatarUser, self).save(*args, **kwargs)
+        if self.image:
+            create_thumbnail_for_avatar_user(user_id=self.user.id)
+
+
+class AvatarProduct(models.Model):
+    objects = models.manager.Manager()
+    product = models.OneToOneField(
+        Product,
+        verbose_name="Продукт",
+        related_name="avatar_product",
+        on_delete=models.CASCADE
+    )
+    title = models.CharField(
+        verbose_name="Имя файла",
+        max_length=100,
+        blank=True,
+        null=True
+    )
+    image = ThumbnailerImageField(
+        verbose_name="Изображение",
+        upload_to="images_product/",
+        blank=True,
+        null=True
+    )
+
+    def __str__(self):
+        return self.title, self.product.name
+
+    class Meta:
+        ordering = ["product"]
+        verbose_name = "Изображение продукта"
+        verbose_name_plural = "Изображения продуктов"
+        constraints = [
+            models.UniqueConstraint(fields=["product"], name="unique_image")
+        ]
+
+    def save(self, *args, **kwargs):
+        if not self.title:
+            self.title = self.product.name
+        super(AvatarProduct, self).save(*args, **kwargs)
+        if self.image:
+            create_thumbnail_for_avatar_product(product_id=self.product.id)
