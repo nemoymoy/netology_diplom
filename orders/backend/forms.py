@@ -1,28 +1,42 @@
 from django import forms
 from django.contrib.auth.forms import (
-    UserCreationForm,
     UserChangeForm,
     AdminUserCreationForm,
 )
 from django.contrib.auth.password_validation import validate_password
-from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from rest_framework.response import Response
-
+from allauth.socialaccount.forms import SignupForm
+from easy_thumbnails.widgets import ImageClearableFileInput
 from .models import (
     CustomUser,
     ContactInfo,
     Order,
     Shop,
     ProductInfo,
+    AvatarUser,
+    AvatarProduct,
 )
-from django.contrib.auth.decorators import login_required
-
 from .serializers import ContactInfoSerializer
 
-from allauth.socialaccount.forms import SignupForm
 
+class AvatarUserImageForm(forms.ModelForm):
+    class Meta:
+        model = AvatarUser
+        fields = ["title", "image"]
+        widgets = {
+            "image": ImageClearableFileInput,
+        }
+
+class ProductUserImageForm(forms.ModelForm):
+    class Meta:
+        model = AvatarProduct
+        fields = ["title", "image"]
+        widgets = {
+            "image": ImageClearableFileInput,
+        }
 
 class MyCustomSignupForm(SignupForm):
 
@@ -55,7 +69,7 @@ class RegisterForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput, required=True)
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ["first_name", "last_name", "email", "company", "position"]
 
     def clean(self):
@@ -243,7 +257,7 @@ class PriceUpdateForm(forms.ModelForm):
     url = forms.URLField(label="URL")
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ["email", "password"]
 
     def clean(self):
