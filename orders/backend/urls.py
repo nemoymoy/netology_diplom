@@ -26,6 +26,10 @@ from .views import (
     PartnerUpdateTask,
     RegisterAccountTask,
     HomeView,
+    avatar_user,
+    edit_image_user,
+    avatar_product,
+    edit_image_product,
 )
 
 app_name = "backend"
@@ -94,4 +98,16 @@ urlpatterns += [
     path(
         "partner/orders", PartnerOrders.as_view(), name="partner-orders"
     ),  # Для получения заказов поставщиками
+    path(
+        "avatar_user", avatar_user, name="avatar_user"
+    ),  # Для загрузки аватара Пользователя
+    path(
+        "edit_image_user/<int:pk>/", edit_image_user, name="edit_image_user"
+    ),  # Для редактирования аватара Пользователя
+    path(
+        "avatar_product", avatar_product, name="avatar_product"
+    ),  # Для загрузки изображения продукта
+    path(
+        "edit_image_product/<int:pk>/", edit_image_product, name="edit_image_product"
+    ),  # Для редактирования изображения продукта
 ]
