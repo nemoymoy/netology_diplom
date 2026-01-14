@@ -225,9 +225,17 @@ class ConfirmEmailTokenAdmin(admin.ModelAdmin):
 
     @admin.register(AvatarUser)
     class AvatarUserAdmin(admin.ModelAdmin):
+        model = AvatarUser
+        fieldsets = (
+            (None, {"fields": ("title", "image")}),
+            ("Additional Info", {"fields": ("user",)}),
+        )
         list_display = ("id", "user", "title", "image")
 
 
     @admin.register(AvatarProduct)
     class AvatarProductAdmin(admin.ModelAdmin):
+        model = AvatarProduct
+        fieldsets = ((None, {"fields": ("title", "image")}),
+            ("Additional Info", {"fields": ("product",)}),)
         list_display = ("id", "product", "title", "image")
