@@ -845,11 +845,11 @@ def avatar_user(request):
             form.save()
             user = request.user
             create_thumbnail_for_avatar_user.delay(user_id=user.id)
-            return redirect("mainapp:avatar_user")
+            return redirect("backend:avatar_user")
     else:
         form = AvatarUserImageForm()
     images = AvatarUser.objects.all()
-    return render(request, "mainapp/avatar_user.html", {"form": form, "images": images})
+    return render(request, "backend/avatar_user.html", {"form": form, "images": images})
 
 def edit_image_user(request, pk):
     image = get_object_or_404(AvatarUser, pk=pk)
@@ -857,10 +857,10 @@ def edit_image_user(request, pk):
         form = AvatarUserImageForm(request.POST, request.FILES, instance=image)
         if form.is_valid():
             form.save()
-            return redirect("mainapp:avatar_user")
+            return redirect("backend:avatar_user")
     else:
         form = AvatarUserImageForm(instance=image)
-    return render(request, "mainapp/edit_image_user.html", {"form": form, "image": image})
+    return render(request, "backend/edit_image_user.html", {"form": form, "image": image})
 
 def avatar_product(request):
     if request.method == "POST":

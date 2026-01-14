@@ -93,7 +93,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            path.join(BASE_DIR, "backend", "templates", "mainapp")
+            path.join(BASE_DIR, "backend", "templates", "backend")
         ],  # используем каталог шаблонов на уровне проекта
         "APP_DIRS": True,
         "OPTIONS": {

@@ -13,7 +13,7 @@ from .models import (
     Order,
     OrderItem,
     ContactInfo,
-    ConfirmEmailToken,
+    ConfirmEmailToken, AvatarUser, AvatarProduct,
 )
 
 # Register your models here.
@@ -221,3 +221,13 @@ class ConfirmEmailTokenAdmin(admin.ModelAdmin):
     )
     search_fields = ["user__email"]
     list_filter = ("created_at",)
+
+
+    @admin.register(AvatarUser)
+    class AvatarUserAdmin(admin.ModelAdmin):
+        list_display = ("id", "user", "title", "image")
+
+
+    @admin.register(AvatarProduct)
+    class AvatarProductAdmin(admin.ModelAdmin):
+        list_display = ("id", "product", "title", "image")
