@@ -21,6 +21,10 @@ from django.conf.urls.static import static
 from . import settings
 from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 
+from django.core.cache import cache
+
+cache.clear()
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -36,4 +40,4 @@ if settings.DEBUG:
     urlpatterns += [
         path("__debug__/", include(debug_toolbar.urls)),
     ]
-    # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
