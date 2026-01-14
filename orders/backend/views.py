@@ -869,11 +869,11 @@ def avatar_product(request):
             form.save()
             product = request.product
             create_thumbnail_for_avatar_product.delay(product_id=product.id)
-            return redirect("mainapp:avatar_product")
+            return redirect("backend:avatar_product")
     else:
         form = AvatarProductImageForm()
     images = AvatarProduct.objects.all()
-    return render(request, "mainapp/avatar_product.html", {"form": form, "images": images})
+    return render(request, "backend/avatar_product.html", {"form": form, "images": images})
 
 def edit_image_product(request, pk):
     image = get_object_or_404(AvatarProduct, pk=pk)
@@ -881,7 +881,7 @@ def edit_image_product(request, pk):
         form = AvatarProductImageForm(request.POST, request.FILES, instance=image)
         if form.is_valid():
             form.save()
-            return redirect("mainapp:avatar_product")
+            return redirect("backend:avatar_product")
     else:
         form = AvatarProductImageForm(instance=image)
-    return render(request, "mainapp/edit_image_product.html", {"form": form, "image": image})
+    return render(request, "backend/edit_image_product.html", {"form": form, "image": image})

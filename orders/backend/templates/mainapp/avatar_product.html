@@ -18,7 +18,7 @@
             <li>
                 <img src="{{ image.image.url }}" alt="{{ image.title }}" style="max-height: 200px;">
                 <p>{{ image.title }}</p>
-                <a href="{% url 'mainapp:edit_image_product' image.pk %}">Редактировать</a>
+                <a href="{% url 'backend:edit_image_product' image.pk %}">Редактировать</a>
             </li>
         {% endfor %}
     </ul>
