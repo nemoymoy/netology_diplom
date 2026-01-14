@@ -182,6 +182,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 THUMBNAIL_DEFAULT_STORAGE_ALIAS = "easy_thumbnails"
+THUMBNAIL_BASEDIR = 'images_user'
 
 STORAGES = {
     "default": {
