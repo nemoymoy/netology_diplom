@@ -445,7 +445,7 @@ class AvatarUser(models.Model):
     )
 
     def __str__(self):
-        return self.title, self.user.username
+        return f'{self.title} {self.user.username}'
 
     class Meta:
         ordering = ["user"]
@@ -485,7 +485,7 @@ class AvatarProduct(models.Model):
     )
 
     def __str__(self):
-        return self.title, self.product.name
+        return f'{self.title} {self.product.name}'
 
     class Meta:
         ordering = ["product"]
