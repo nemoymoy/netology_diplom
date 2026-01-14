@@ -843,6 +843,7 @@ def avatar_user(request):
         form = AvatarUserImageForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            print(request)
             user = request.user
             create_thumbnail_for_avatar_user.delay(user_id=user.id)
             return redirect("backend:avatar_user")
@@ -867,6 +868,7 @@ def avatar_product(request):
         form = AvatarProductImageForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            print(request)
             product = request.product
             create_thumbnail_for_avatar_product.delay(product_id=product.id)
             return redirect("backend:avatar_product")
