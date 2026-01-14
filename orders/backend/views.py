@@ -845,7 +845,7 @@ def avatar_user(request):
             form.save()
             user = request.user
             create_thumbnail_for_avatar_user.delay(user_id=user.id)
-            return redirect("avatar_user")
+            return redirect("mainapp:avatar_user")
     else:
         form = AvatarUserImageForm()
     images = AvatarUser.objects.all()
@@ -857,7 +857,7 @@ def edit_image_user(request, pk):
         form = AvatarUserImageForm(request.POST, request.FILES, instance=image)
         if form.is_valid():
             form.save()
-            return redirect("avatar_user")
+            return redirect("mainapp:avatar_user")
     else:
         form = AvatarUserImageForm(instance=image)
     return render(request, "mainapp/edit_image_user.html", {"form": form, "image": image})
@@ -869,7 +869,7 @@ def avatar_product(request):
             form.save()
             product = request.product
             create_thumbnail_for_avatar_product.delay(product_id=product.id)
-            return redirect("avatar_product")
+            return redirect("mainapp:avatar_product")
     else:
         form = AvatarProductImageForm()
     images = AvatarProduct.objects.all()
@@ -881,7 +881,7 @@ def edit_image_product(request, pk):
         form = AvatarProductImageForm(request.POST, request.FILES, instance=image)
         if form.is_valid():
             form.save()
-            return redirect("avatar_product")
+            return redirect("mainapp:avatar_product")
     else:
         form = AvatarProductImageForm(instance=image)
     return render(request, "mainapp/edit_image_product.html", {"form": form, "image": image})
