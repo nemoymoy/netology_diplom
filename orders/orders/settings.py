@@ -292,6 +292,4 @@ ROLLBAR = {
     'environment': 'development' if DEBUG else 'production',
     'code_version': '1.0',
     'root': BASE_DIR,
-    'enabled': bool(os.environ.get('ROLLBAR_ENABLED', False)),
 }
-rollbar.init(**ROLLBAR)
