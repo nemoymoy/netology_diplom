@@ -290,6 +290,7 @@ ACCOUNT_RATE_LIMITS = False
 ROLLBAR = {
     'access_token': os.getenv("ROLLBAR_ACCESS_TOKEN"),
     'environment': 'development' if DEBUG else 'production',
+    'code_version': '1.0',
     'root': BASE_DIR,
     'enabled': bool(os.environ.get('ROLLBAR_ENABLED', False)),
 }

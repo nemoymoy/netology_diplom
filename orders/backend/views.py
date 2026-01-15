@@ -8,7 +8,7 @@ from ast import literal_eval
 import rollbar
 
 from django.contrib.auth.password_validation import validate_password
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.db.models import Q, Sum, F
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -890,9 +890,14 @@ def edit_image_product(request, pk):
 
 class RollbarTestView(APIView):
     @staticmethod
-    def get(request, *args, **kwargs):
-        try:
-            raise ValueError("Тестовое исключение для Rollbar")
-        except Exception as e:
-            rollbar.report_exc_info()  # Отправляем исключение в Rollbar
-            raise  # Повторно выбрасываем ошибку для отображения
+    # def get(request, *args, **kwargs):
+    #     try:
+    #         raise ValueError("Тестовое исключение для Rollbar")
+    #     except Exception as e:
+    #         rollbar.report_exc_info()  # Отправляем исключение в Rollbar
+    #         raise  # Повторно выбрасываем ошибку для отображения
+
+    def index(request):
+        a = None
+        a.hello()  # Creating an error with an invalid line of code
+        return HttpResponse("Hello, world. You're at the pollapp index.")
