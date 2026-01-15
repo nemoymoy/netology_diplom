@@ -890,14 +890,14 @@ def edit_image_product(request, pk):
 
 class RollbarTestView(APIView):
     @staticmethod
-    # def get(request, *args, **kwargs):
+    def get(request, *args, **kwargs):
     #     try:
     #         raise ValueError("Тестовое исключение для Rollbar")
     #     except Exception as e:
     #         rollbar.report_exc_info()  # Отправляем исключение в Rollbar
     #         raise  # Повторно выбрасываем ошибку для отображения
 
-    def index(request):
+    # def index(request):
         a = None
         a.hello()  # Creating an error with an invalid line of code
         return HttpResponse("Hello, world. You're at the pollapp index.")
