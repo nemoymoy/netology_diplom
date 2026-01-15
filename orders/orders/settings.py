@@ -288,7 +288,7 @@ ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_RATE_LIMITS = False
 
 ROLLBAR = {
-    'access_token': 'e10dfe4e54df4048894e8f09b7677cbe',
+    'access_token': '3c05b4d5d437444f8603ff3dc291d34a7ab571cc581a5609887ff4498faf95f98eef2cf6bedfb23c157adbbbe2819924',
     'environment': 'development' if DEBUG else 'production',
     'code_version': '1.0',
     'root': BASE_DIR,
