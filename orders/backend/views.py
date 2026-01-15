@@ -5,7 +5,7 @@ from yaml import load as load_yaml, Loader
 from urllib.parse import quote
 from distutils.util import strtobool
 from ast import literal_eval
-
+import rollbar
 
 from django.contrib.auth.password_validation import validate_password
 from django.http import JsonResponse, Http404
@@ -892,4 +892,8 @@ def edit_image_product(request, pk):
 class RollbarTestView(APIView):
     @staticmethod
     def get(request, *args, **kwargs):
-        test_rollbar.delay()
+        try:
+            raise ValueError("Тестовое исключение для Rollbar")
+        except Exception as e:
+            rollbar.report_exc_info()  # Отправляем исключение в Rollbar
+            raise  # Повторно выбрасываем ошибку для отображения
