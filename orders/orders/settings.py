@@ -288,7 +288,7 @@ ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_RATE_LIMITS = False
 
 ROLLBAR = {
-    'access_token': os.getenv("ROLLBAR_ACCESS_TOKEN"),
+    'access_token': 'e10dfe4e54df4048894e8f09b7677cbe',
     'environment': 'development' if DEBUG else 'production',
     'code_version': '1.0',
     'root': BASE_DIR,
