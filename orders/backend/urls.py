@@ -29,7 +29,7 @@ from .views import (
     avatar_user,
     edit_image_user,
     avatar_product,
-    edit_image_product,
+    edit_image_product, RollbarTestView,
 )
 
 app_name = "backend"
@@ -110,4 +110,5 @@ urlpatterns += [
     path(
         "edit_image_product/<int:pk>/", edit_image_product, name="edit_image_product"
     ),  # Для редактирования изображения продукта
+    path('test-rollbar/', RollbarTestView.as_view(), name='test-rollbar'),  # Для тестирования rollbar
 ]

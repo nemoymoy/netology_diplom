@@ -1,5 +1,6 @@
 import os
 from celery import Celery
+from celery.signals import task_failure
 from .settings import INSTALLED_APPS
 
 # Set the default Django settings module for the 'celery' program.
@@ -17,6 +18,20 @@ celery_app.config_from_object(obj="django.conf:settings", namespace="CELERY")
 
 # Load task modules from all registered Django apps.
 celery_app.autodiscover_tasks(lambda: INSTALLED_APPS)
+
+if bool(os.environ.get('CELERY_WORKER_RUNNING', False)):
+    from django.conf import settings
+    import rollbar
+    rollbar.init(**settings.ROLLBAR)
+
+    def celery_base_data_hook(request, data):
+        data['framework'] = 'celery'
+
+    rollbar.BASE_DATA_HOOK = celery_base_data_hook
+
+    @task_failure.connect
+    def handle_task_failure(**kw):
+        rollbar.report_exc_info(extra_data=kw)
 
 
 @celery_app.task(bind=True)

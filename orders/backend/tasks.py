@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+import rollbar
 
 from .models import Shop, Category, Product, Parameter, ProductParameter, ProductInfo, AvatarUser, AvatarProduct
 
@@ -89,3 +90,11 @@ def create_thumbnail_for_avatar_product(product_id):
         })
         # Сохраняем миниатюру (если нужно)
         thumbnail.save()
+
+@shared_task
+def test_rollbar():
+    try:
+        raise ValueError("Тестовое исключение для Rollbar")
+    except Exception as e:
+        rollbar.report_exc_info()  # Отправляем исключение в Rollbar
+        raise  # Повторно выбрасываем ошибку для отображения

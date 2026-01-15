@@ -16,6 +16,8 @@ from pathlib import Path
 from django.core.management.utils import (
     get_random_secret_key,
 )  # Импортирована функция случайного секретного ключа
+import rollbar
+import rollbar.contrib.django.middleware as rollbar_middleware
 
 from dotenv import load_dotenv
 
@@ -29,11 +31,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv(
-    "SECRET_KEY", get_random_secret_key()
+    "DJANGO_SECRET_KEY", get_random_secret_key()
 )  # Значение в файле переменных .env
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv("DEBUG", default=0))  # Значение в файле переменных .env
+DEBUG = bool(os.getenv("DJANGO_DEBUG", default=0))  # Значение в файле переменных .env
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(
     ","
@@ -86,6 +88,7 @@ MIDDLEWARE = [
     "django.middleware.cache.FetchFromCacheMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "rollbar.contrib.django.middleware.RollbarNotifierMiddleware",
 ]
 
 ROOT_URLCONF = "orders.urls"
@@ -283,3 +286,11 @@ ACCOUNT_SIGNUP_FIELDS = [
 ACCOUNT_LOGIN_METHODS = {"email"}
 # ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 60
 ACCOUNT_RATE_LIMITS = False
+
+ROLLBAR = {
+    'access_token': os.getenv("ROLLBAR_ACCESS_TOKEN"),
+    'environment': 'development' if DEBUG else 'production',
+    'root': BASE_DIR,
+    'enabled': bool(os.environ.get('ROLLBAR_ENABLED', False)),
+}
+rollbar.init(**ROLLBAR)

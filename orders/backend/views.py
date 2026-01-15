@@ -1,11 +1,11 @@
 import json
-
 import requests
 from ujson import loads as load_json
 from yaml import load as load_yaml, Loader
 from urllib.parse import quote
 from distutils.util import strtobool
 from ast import literal_eval
+
 
 from django.contrib.auth.password_validation import validate_password
 from django.http import JsonResponse, Http404
@@ -48,7 +48,8 @@ from .serializers import (
     OrderItemSerializer,
 )
 
-from .tasks import send_email, get_import, create_thumbnail_for_avatar_user, create_thumbnail_for_avatar_product
+from .tasks import send_email, get_import, create_thumbnail_for_avatar_user, create_thumbnail_for_avatar_product, \
+    test_rollbar
 
 
 # Create your views here.
@@ -886,3 +887,9 @@ def edit_image_product(request, pk):
     else:
         form = AvatarProductImageForm(instance=image)
     return render(request, "backend/edit_image_product.html", {"form": form, "image": image})
+
+
+class RollbarTestView(APIView):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        test_rollbar.delay()
