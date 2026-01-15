@@ -37,4 +37,4 @@ if settings.DEBUG:
         path("__debug__/", include(debug_toolbar.urls)),
     ]
 
-urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
+urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]

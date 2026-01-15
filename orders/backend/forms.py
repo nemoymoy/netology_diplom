@@ -30,6 +30,7 @@ class AvatarUserImageForm(forms.ModelForm):
             "image": ImageClearableFileInput,
         }
 
+
 class AvatarProductImageForm(forms.ModelForm):
     class Meta:
         model = AvatarProduct
@@ -37,6 +38,7 @@ class AvatarProductImageForm(forms.ModelForm):
         widgets = {
             "image": ImageClearableFileInput,
         }
+
 
 class MyCustomSignupForm(SignupForm):
 

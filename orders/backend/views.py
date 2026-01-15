@@ -5,10 +5,9 @@ from yaml import load as load_yaml, Loader
 from urllib.parse import quote
 from distutils.util import strtobool
 from ast import literal_eval
-import rollbar
 
 from django.contrib.auth.password_validation import validate_password
-from django.http import JsonResponse, Http404, HttpResponse
+from django.http import JsonResponse, Http404
 from django.db.models import Q, Sum, F
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist

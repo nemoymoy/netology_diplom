@@ -73,7 +73,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.vk",
     "baton.autodiscover",
-    'silk'
+    "silk",
 ]
 
 MIDDLEWARE = [
@@ -90,7 +90,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "rollbar.contrib.django.middleware.RollbarNotifierMiddleware",
-    'silk.middleware.SilkyMiddleware',
+    "silk.middleware.SilkyMiddleware",
 ]
 
 ROOT_URLCONF = "orders.urls"
@@ -290,8 +290,8 @@ ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_RATE_LIMITS = False
 
 ROLLBAR = {
-    'access_token': os.getenv("ROLLBAR_ACCESS_TOKEN"),
-    'environment': 'development' if DEBUG else 'production',
-    'code_version': '1.0',
-    'root': BASE_DIR,
+    "access_token": os.getenv("ROLLBAR_ACCESS_TOKEN"),
+    "environment": "development" if DEBUG else "production",
+    "code_version": "1.0",
+    "root": BASE_DIR,
 }

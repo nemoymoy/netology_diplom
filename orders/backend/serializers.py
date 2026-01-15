@@ -9,7 +9,9 @@ from .models import (
     ProductParameter,
     ContactInfo,
     Order,
-    OrderItem, AvatarUser, AvatarProduct,
+    OrderItem,
+    AvatarUser,
+    AvatarProduct,
 )
 
 from rest_framework.validators import UniqueValidator
@@ -189,6 +191,7 @@ class OrderSerializer(serializers.ModelSerializer):
     ordered_items = OrderItemCreateSerializer(read_only=True, many=True)
     total_sum = serializers.IntegerField()
     contact = ContactInfoSerializer(read_only=True)
+
     class Meta:
         model = Order
         fields = (
@@ -200,21 +203,20 @@ class OrderSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("id",)
 
+
 class AvatarUserSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+
     class Meta:
         model = AvatarUser
-        fields = (
-            "id", "user", "title", "image"
-        )
+        fields = ("id", "user", "title", "image")
         read_only_fields = ("id", "user", "title", "image")
 
 
 class AvatarProductSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
+
     class Meta:
         model = AvatarProduct
-        fields = (
-            "id", "product", "title", "image"
-        )
+        fields = ("id", "product", "title", "image")
         read_only_fields = ("id", "product", "title", "image")

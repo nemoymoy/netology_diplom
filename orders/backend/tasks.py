@@ -1,10 +1,15 @@
 import os
 import rollbar
 
-rollbar.init(os.getenv("ROLLBAR_ACCESS_TOKEN"), 'development',)
+rollbar.init(
+    os.getenv("ROLLBAR_ACCESS_TOKEN"),
+    "development",
+)
+
 
 def celery_base_data_hook(request, data):
-    data['framework'] = 'celery'
+    data["framework"] = "celery"
+
 
 rollbar.BASE_DATA_HOOK = celery_base_data_hook
 
@@ -19,7 +24,16 @@ from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
-from .models import Shop, Category, Product, Parameter, ProductParameter, ProductInfo, AvatarUser, AvatarProduct
+from .models import (
+    Shop,
+    Category,
+    Product,
+    Parameter,
+    ProductParameter,
+    ProductInfo,
+    AvatarUser,
+    AvatarProduct,
+)
 
 
 @shared_task
@@ -77,33 +91,41 @@ def get_import(partner, url):
         return {"Status": True}
     return {"Status": False, "Errors": "Url-адрес является ложным"}
 
+
 @shared_task
 def create_thumbnail_for_avatar_user(user_id):
     user_profile = AvatarUser.objects.get(user_id=user_id)
     if user_profile.image:
         thumbnailer = get_thumbnailer(user_profile.image)
-        thumbnail = thumbnailer.get_thumbnail({
-            'size': (100, 100),
-            'crop': True,
-        })
+        thumbnail = thumbnailer.get_thumbnail(
+            {
+                "size": (100, 100),
+                "crop": True,
+            }
+        )
         # Сохраняем миниатюру (если нужно)
         thumbnail.save()
+
 
 @shared_task
 def create_thumbnail_for_avatar_product(product_id):
     product_profile = AvatarProduct.objects.get(product_id=product_id)
     if product_profile.image:
         thumbnailer = get_thumbnailer(product_profile.image)
-        thumbnail = thumbnailer.get_thumbnail({
-            'size': (100, 100),
-            'crop': True,
-        })
+        thumbnail = thumbnailer.get_thumbnail(
+            {
+                "size": (100, 100),
+                "crop": True,
+            }
+        )
         # Сохраняем миниатюру (если нужно)
         thumbnail.save()
+
 
 @task_failure.connect
 def handle_task_failure(**kw):
     rollbar.report_exc_info(extra_data=kw)
+
 
 @shared_task
 def test_rollbar():
