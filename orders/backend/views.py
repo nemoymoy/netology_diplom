@@ -48,8 +48,7 @@ from .serializers import (
     OrderItemSerializer,
 )
 
-from .tasks import send_email, get_import, create_thumbnail_for_avatar_user, create_thumbnail_for_avatar_product, \
-    test_rollbar
+from .tasks import send_email, get_import, create_thumbnail_for_avatar_user, create_thumbnail_for_avatar_product
 
 
 # Create your views here.
