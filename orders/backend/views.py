@@ -36,7 +36,9 @@ from .models import (
     Order,
     OrderItem,
     ContactInfo,
-    ConfirmEmailToken, AvatarUser, AvatarProduct,
+    ConfirmEmailToken,
+    AvatarUser,
+    AvatarProduct,
 )
 from .serializers import (
     UserSerializer,
@@ -48,7 +50,13 @@ from .serializers import (
     OrderItemSerializer,
 )
 
-from .tasks import send_email, get_import, create_thumbnail_for_avatar_user, create_thumbnail_for_avatar_product
+from .tasks import (
+    send_email,
+    get_import,
+    create_thumbnail_for_avatar_user,
+    create_thumbnail_for_avatar_product,
+    test_rollbar,
+)
 
 
 # Create your views here.
@@ -838,6 +846,7 @@ class PartnerOrders(APIView):
         )
         return Response(serializer.data)
 
+
 def avatar_user(request):
     if request.method == "POST":
         form = AvatarUserImageForm(request.POST, request.FILES)
@@ -852,6 +861,7 @@ def avatar_user(request):
     images = AvatarUser.objects.all()
     return render(request, "backend/avatar_user.html", {"form": form, "images": images})
 
+
 def edit_image_user(request, pk):
     image = get_object_or_404(AvatarUser, pk=pk)
     if request.method == "POST":
@@ -861,7 +871,10 @@ def edit_image_user(request, pk):
             return redirect("backend:avatar_user")
     else:
         form = AvatarUserImageForm(instance=image)
-    return render(request, "backend/edit_image_user.html", {"form": form, "image": image})
+    return render(
+        request, "backend/edit_image_user.html", {"form": form, "image": image}
+    )
+
 
 def avatar_product(request):
     if request.method == "POST":
@@ -874,7 +887,10 @@ def avatar_product(request):
     else:
         form = AvatarProductImageForm()
     images = AvatarProduct.objects.all()
-    return render(request, "backend/avatar_product.html", {"form": form, "images": images})
+    return render(
+        request, "backend/avatar_product.html", {"form": form, "images": images}
+    )
+
 
 def edit_image_product(request, pk):
     image = get_object_or_404(AvatarProduct, pk=pk)
@@ -885,19 +901,16 @@ def edit_image_product(request, pk):
             return redirect("backend:avatar_product")
     else:
         form = AvatarProductImageForm(instance=image)
-    return render(request, "backend/edit_image_product.html", {"form": form, "image": image})
+    return render(
+        request, "backend/edit_image_product.html", {"form": form, "image": image}
+    )
 
 
 class RollbarTestView(APIView):
     @staticmethod
     def get(request, *args, **kwargs):
-    #     try:
-    #         raise ValueError("Тестовое исключение для Rollbar")
-    #     except Exception as e:
-    #         rollbar.report_exc_info()  # Отправляем исключение в Rollbar
-    #         raise  # Повторно выбрасываем ошибку для отображения
+        # a = None
+        # a.hello()  # Creating an error with an invalid line of code
+        # return HttpResponse("Hello, world. You're at the pollapp index.")
 
-    # def index(request):
-        a = None
-        a.hello()  # Creating an error with an invalid line of code
-        return HttpResponse("Hello, world. You're at the pollapp index.")
+        test_rollbar.delay()

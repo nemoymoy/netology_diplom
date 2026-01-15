@@ -1,4 +1,15 @@
+import os
+import rollbar
+
+rollbar.init(os.getenv("ROLLBAR_ACCESS_TOKEN"), 'development',)
+
+def celery_base_data_hook(request, data):
+    data['framework'] = 'celery'
+
+rollbar.BASE_DATA_HOOK = celery_base_data_hook
+
 from celery import shared_task
+from celery.signals import task_failure
 import requests
 from easy_thumbnails.files import get_thumbnailer
 from yaml import load as load_yaml, Loader
@@ -7,7 +18,6 @@ from django.core.mail import send_mail
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-# import rollbar
 
 from .models import Shop, Category, Product, Parameter, ProductParameter, ProductInfo, AvatarUser, AvatarProduct
 
@@ -91,10 +101,14 @@ def create_thumbnail_for_avatar_product(product_id):
         # Сохраняем миниатюру (если нужно)
         thumbnail.save()
 
-# @shared_task
-# def test_rollbar():
-#     try:
-#         raise ValueError("Тестовое исключение для Rollbar")
-#     except Exception as e:
-#         rollbar.report_exc_info()  # Отправляем исключение в Rollbar
-#         raise  # Повторно выбрасываем ошибку для отображения
+@task_failure.connect
+def handle_task_failure(**kw):
+    rollbar.report_exc_info(extra_data=kw)
+
+@shared_task
+def test_rollbar():
+    try:
+        raise ValueError("Тестовое исключение для Rollbar")
+    except Exception as e:
+        rollbar.report_exc_info()  # Отправляем исключение в Rollbar
+        raise  # Повторно выбрасываем ошибку для отображения
